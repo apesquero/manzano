@@ -1,0 +1,72 @@
+# -*- coding: utf-8 -*-
+
+from openerp import models, fields, api
+from openerp.exceptions import UserError
+from openerp.tools.translate import _
+import base64
+import xlrd
+import logging
+_logger = logging.getLogger(__name__)
+
+
+class Wizard_Multi_Dimension_Table(models.TransientModel):
+    _name = 'manzano.wizard.mdtable'
+
+    @api.multi
+    def import_sale_prices_from_file(self):
+        record_id = self.env[self._context.get('active_model')].browse(self._context.get('active_id'))
+
+        try:
+            book = xlrd.open_workbook(file_contents=base64.b64decode(self.prices_table_file))
+            opers = self._generate_commands_from_xls_book(record_id.sale_price_type, book)
+            record_id.write({'sale_prices_table': [(5, False, False)] + opers})
+        except xlrd.XLRDError as err:
+            raise UserError(_('Invalid file format! (Only accept .xls or .xlsx)'))
+        return {}
+    
+    @api.multi
+    def import_cost_prices_from_file(self):
+        record_id = self.env[self._context.get('active_model')].browse(self._context.get('active_id'))
+
+        try:
+            book = xlrd.open_workbook(file_contents=base64.b64decode(self.prices_table_file))
+            opers = self._generate_commands_from_xls_book(record_id.cost_price_type, book)
+            record_id.write({'cost_prices_table': [(5, False, False)] + opers})
+        except xlrd.XLRDError as err:
+            raise UserError(_('Invalid file format! (Only accept .xls or .xlsx)'))
+        return {}
+
+    @api.multi
+    def import_supplier_prices_from_file(self):
+        record_id = self.env[self._context.get('active_model')].browse(self._context.get('active_id'))
+
+        try:
+            book = xlrd.open_workbook(file_contents=base64.b64decode(self.prices_table_file))
+            opers = self._generate_commands_from_xls_book(record_id.price_type, book)
+            record_id.write({'prices_table': [(5, False, False)] + opers})
+        except xlrd.XLRDError as err:
+            raise UserError(_('Invalid file format! (Only accept .xls or .xlsx)'))
+        return {}
+
+    def _generate_commands_from_xls_book(self, mode, book):
+        fs = book.sheet_by_index(0)
+        rows = range(1, fs.nrows)
+        cols = range(mode == 'table_1d' and 0 or 1, fs.ncols)
+        cmds = []
+        for y in cols:
+            for x in rows:
+                cell = fs.cell(x, y)
+                cellHL = fs.cell(x, 0)
+                cellHT = fs.cell(0, y)
+                cmds.append((
+                    0,
+                    False,
+                    {
+                        'pos_x': cellHT.value,
+                        'pos_y': cellHL.value,
+                        'value': cell.value
+                    }
+                ))
+        return cmds
+
+    prices_table_file = fields.Binary(string='Prices Table File')

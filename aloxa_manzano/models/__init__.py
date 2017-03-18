@@ -18,4 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import product_prices_table
 from . import inherit_product_template
+from . import inherit_product_product
+from . import inherit_product_supplier_info
+from . import inherit_product_attribute_value

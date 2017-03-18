@@ -28,13 +28,23 @@
     'summary': "Aloxa Manzano",
     'description': "Aloxa Manzano",
     'depends': [
+        'sale',
+        'stock',
     ],
     'external_dependencies': {
-        'python': []
+        'python': [
+            'xlrd',
+        ]
     },
     'data': [
+        'views/general.xml',
         'views/inherit_product_template.xml',
-        'views/inherit_product_product.xml'
+        'views/inherit_product_product.xml',
+        'views/inherit_product_supplier_info.xml',
+        'views/inherit_product_attribute_value.xml',
+    ],
+    'qweb': [
+        'static/src/xml/*.xml',
     ],
     'test': [
     ],

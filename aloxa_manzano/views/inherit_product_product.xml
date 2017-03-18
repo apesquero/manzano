@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-   <data>
+<odoo>
    
-		<record id="view_product_product_form" model="ir.ui.view">
-	        <field name="model">product.product</field>
-	        <field name="inherit_id" ref="product.product_normal_form_view" /> 
-	        <field name="arch" type="xml">
-	        
-				<xpath expr="//field[@name='item_ids']" position="before">
-                    <group name="price_type_g" string="Price Type">
-                        <label for="price_type"/>
-                        <div>
-                            <field name="price_type" class="oe_inline"/>
-                        </div>
-                    </group>
-                </xpath>
-							 	
-	        </field>
-	    </record>
-	    
-	</data>
-</openerp>
+	<record id="view_product_product_form" model="ir.ui.view">
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view" /> 
+        <field name="arch" type="xml">
+        
+			<xpath expr="//notebook/page[1]" position="after">
+				<page string="Sale &amp; Cost Price Type">
+	                <group name="sale_price_type_g" string="Sale Price Type">
+	                    <label for="sale_price_type"/>
+	                    <div>
+	                        <field name="sale_price_type" />
+	                    </div>
+	                </group>
+	                <field name="sale_prices_table" widget="manzano_multi_dimension_table" mode="sale_price_type" attrs="{'invisible':[('sale_price_type', 'not in', ['table_1d','table_2d'])]}" />
+	                <button name="%(launch_manzano_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" attrs="{'invisible':[('sale_price_type', 'not in', ['table_1d','table_2d'])]}" />
+            	
+            		<group name="cost_price_type_g" string="Sale Price Type">
+	                    <label for="cost_price_type"/>
+	                    <div>
+	                        <field name="cost_price_type" />
+	                    </div>
+	                </group>
+	                <field name="cost_prices_table" widget="manzano_multi_dimension_table" mode="cost_price_type" attrs="{'invisible':[('cost_price_type', 'not in', ['table_1d','table_2d'])]}" />
+	                <button name="%(launch_manzano_wizard_mdtable_cost_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" attrs="{'invisible':[('cost_price_type', 'not in', ['table_1d','table_2d'])]}" />
+            	</page>
+            </xpath>
+						 	
+        </field>
+    </record>
+
+</odoo>
