@@ -48,7 +48,6 @@ class sale_order_line(models.Model):
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def product_id_change(self):
         super(sale_order_line, self).product_id_change()
-        _logger.info("PASA POR AKI ID")
         if not self.product_id:
             return {'domain': {'product_uom': []}}
 
@@ -70,6 +69,7 @@ class sale_order_line(models.Model):
         )
 
         name = product.name_get()[0][1]
+        name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
         if product.description_sale:
             name += '\n' + product.description_sale
         vals['name'] = name
@@ -83,7 +83,6 @@ class sale_order_line(models.Model):
 
     def product_uom_change(self):
         super(sale_order_line, self).product_uom_change()
-        _logger.info("PASA POR AKI UOM")
         if not self.product_uom:
             self.price_unit = 0.0
             return
