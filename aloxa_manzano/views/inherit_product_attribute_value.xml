@@ -6,8 +6,8 @@
 	    <field name="inherit_id" ref="product.product_attribute_value_view_tree" /> 
 	    <field name="arch" type="xml">
 	    
-	    	<xpath expr="//tree/field[@name='price_extra']" position="after">
-	    		<field name="price_extra_perc" />
+	    	<xpath expr="//tree/field[@name='price_extra']" position="before">
+	    		<field name="price_extra_type" />
 	    	</xpath>
 
 	    </field>

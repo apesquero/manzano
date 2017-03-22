@@ -3,6 +3,7 @@
 #
 #    OpenERP, Open Source Management Solution
 #    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
+#                        Alexandre Díaz <alex@aloxa.eu>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -24,7 +25,7 @@
     'version': '1.0',
     'author': "Alexandre Díaz (Aloxa Solucións S.L.) <alex@aloxa.eu>",
     'website': 'https://www.eiqui.com',
-    'category': 'eiqui/alda',
+    'category': 'eiqui/manzano',
     'summary': "Aloxa Manzano",
     'description': "Aloxa Manzano",
     'depends': [
@@ -42,6 +43,7 @@
         'views/inherit_product_product.xml',
         'views/inherit_product_supplier_info.xml',
         'views/inherit_product_attribute_value.xml',
+        'views/inherit_sale_order.xml',
     ],
     'qweb': [
         'static/src/xml/*.xml',

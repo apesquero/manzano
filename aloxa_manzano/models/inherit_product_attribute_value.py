@@ -2,7 +2,8 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2010 Tiny SPRL (<http://tiny.be>).
+#    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
+#                        Alexandre Díaz <alex@aloxa.eu>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -28,32 +29,9 @@ class product_attribute_value(osv.osv):
     _inherit = "product.attribute.value"
 
     _columns = {
-        'price_extra_perc': fields.float(string="Price Extra Percentage"),
+        'price_extra_type': fields.selection([('standard', u'Standard'),
+                                              ('percentage', u'Percentage')],
+                                             string='Price Extra Type',
+                                             required=True,
+                                             default='standard')
     }
-    
-    _constraints = [
-        (_check_prices, "Can't set 'price extra percentage' and 'price extra' at the same time in the same record", ['price_extra','price_extra_perc']),
-    ]
-
-    def _get_price_extra(self, cr, uid, ids, name, args, context=None):
-        super(product_attribute_value, self)._get_price_extra(cr, uid, ids, name, args, context=context)
-        result = dict.fromkeys(ids, 0)
-        if not context.get('active_id'):
-            return result
-
-        for obj in self.browse(cr, uid, ids, context=context):
-            for price_id in obj.price_ids:
-                if price_id.product_tmpl_id.id == context.get('active_id'):
-                    if price_id.price_extra_perc != 0.0:
-                        result[obj.id] = (price_id.product_tmpl_id.lst_price * price_id.price_extra_perc) / 100.0
-                    else:
-                        result[obj.id] = price_id.price_extra
-                    break
-        return result
-
-    def _check_prices(self, cr, uid, ids, context=None):
-        product_attrs = self.browse(cr, uid, ids, context=context)
-        for attr in product_attrs:
-            if attr.price_extra_perc != 0.0 and attr.price_extra != 0.0:
-                return False
-        return True

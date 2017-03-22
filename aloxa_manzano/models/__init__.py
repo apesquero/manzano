@@ -3,6 +3,7 @@
 #
 #    OpenERP, Open Source Management Solution
 #    Copyright (C) 2017 Solucións Aloxa S.L. <info@aloxa.eu>
+#                        Alexandre Díaz <alex@aloxa.eu>
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,7 +20,8 @@
 #
 ##############################################################################
 from . import product_prices_table
+from . import inherit_product_attribute_value
 from . import inherit_product_template
 from . import inherit_product_product
 from . import inherit_product_supplier_info
-from . import inherit_product_attribute_value
+from . import inherit_sale_order_line
