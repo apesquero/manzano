@@ -45,8 +45,11 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 
         this.tableType_field = this.node.attrs.mode || false;
         
+         console.log(this);
+        
         this.ds_model = new data.DataSetSearch(this, this.view.model);
         this.model_product_prices_table = new Model("product.prices_table");
+        this.model_view = new Model(this.view.model);
         
         this.isInvisible = true;
         this.values = [];
@@ -61,12 +64,21 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     },
     
     commit_value: function (value_) {
+    	var self = this;
+    	var values = [];
     	this.$el.find('.o_mdtable_item').each(function(){
-			console.log(value_);
+    		var $this = $(this);
+    		var _id = $this.data('id');
+    		var _x = $this.data('x');
+    		var _y = $this.data('y');
+    		var _v = $this.find('input').val();
+    		
+    		if (self._get_item(_x, _y).value != _v) {
+    			self.model_product_prices_table.call('write', [[_id], {'value': _v}]);
+    			self._set_item(_x, _y, _v);
+    		}
 		});
-    	
-    	//this.model_product_prices_table.call('write', []
-        console.log("INTERNAL SET value");
+
         return this._super();
     },
     
@@ -126,7 +138,8 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     		for (var y in hy) {
     			tbody_src += `<tr><th class='col-md-1'>${hy[y]}</th>`;
     			for (var x in hx) {
-    				tbody_src += `<td class='o_mdtable_item' data-x='${hx[x]}' data-y='${hy[y]}'>${this._get_item(hx[x], hy[y]).value || '0.0'}</td>`;
+    				var item = this._get_item(hx[x], hy[y]);
+    				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
     			}
     			tbody_src += '</tr>';
     		}
@@ -138,7 +151,8 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     		
 			var tbody_src = '';
 			for (var x in hx) {
-				tbody_src += `<td>${this._get_item(hx[x], hy[0]).value || '0.0'}</td>`;
+				var item = this._get_item(hx[x], false);
+				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='1'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
 			}
 		
 	    	table.append(`<tbody><tr>${tbody_src}</tr></tbody>`);
@@ -150,14 +164,16 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     bind_events: function () {
     	var self = this;
     	
-    	/*$('.o_mdtable_item').on('click', function(ev){
-    		console.log(this.dataset);
+    	$('.o_mdtable_item').on('click', function(ev){
     		var $this = $(this);
     		var inEditMode = self.view.get("actual_mode") === 'edit';
-    		if (inEditMode && !$this.find('input')[0]) {
-    			$this.html(`<input type='text' value='${$this.text()}' />`);
+    		if (!inEditMode) {
+    			var $button = $(document).find(".oe_form_button_edit");
+                $button.openerpBounce();
+                ev.stopPropagation();
+                core.bus.trigger('click', ev);
     		}
-    	});*/
+    	});
     },
     
     on_view_changed: function () {
@@ -189,13 +205,24 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     _get_item(x, y) {
     	var value = false;
     	this.values.forEach(function(item, index) {
-    		if (item.pos_x == x && item.pos_y == y) {
+    		if ((!item.pos_y && item.pos_x == x) || (item.pos_x == x && item.pos_y == y)) {
     			value = item;
     			return;
     		}
     	});
     	
     	return value;
+    },
+    
+    _set_item(x, y, value) {
+    	var self = this;
+    	this.values.forEach(function(item, index) {
+    		if ((!item.pos_y && item.pos_x == x) || (item.pos_x == x && item.pos_y == y)) {
+    			item.value = value;
+    			self.values[index] = item;
+    			return;
+    		}
+    	});
     },
 });
 

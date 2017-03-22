@@ -111,7 +111,6 @@ class product_product(osv.osv):
                         ('pos_x', '=', width),
                         ('pos_y', '=', height)
                     ], limit=1, context=context)
-                    _logger.info(res)
                     result[product.id] = res and res[0]['value'] or False
                 elif product.sale_price_type == 'table_1d':
                     res = product_prices_table_obj.search_read(cr, uid, [

@@ -4,6 +4,8 @@
 	<!-- inherit from web assets backend -->
 	<template id="assets_backend" inherit_id="web.assets_backend">
 		<xpath expr="." position="inside">
+			<link rel="stylesheet" href="/aloxa_manzano/static/src/css/multi_dimension_table.css" />
+			
 			<script type="text/javascript" src="/aloxa_manzano/static/src/js/MultiDimensionTable.js"></script>
 		</xpath>
 	</template>

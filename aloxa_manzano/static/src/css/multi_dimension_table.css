@@ -1,0 +1,12 @@
+.o_mdtable table tbody th, .o_mdtable table thead th {
+	background-color: gainsboro;
+	text-align: center;
+}
+
+.o_mdtable table tbody td:hover {
+	background-color: beige;
+}
+
+.o_mdtable {
+	overflow: auto;
+}
