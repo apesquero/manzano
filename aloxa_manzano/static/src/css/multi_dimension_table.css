@@ -6,7 +6,7 @@
 	max-width: 50px;
 }
 
-.o_mdtable table tbody th:first {
+.o_mdtable table tbody th:first-child {
 	border-top: 1px solid #dfdfdf;
 }
 .o_mdtable table tbody th {

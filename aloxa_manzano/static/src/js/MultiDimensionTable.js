@@ -193,8 +193,9 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 	    		var _x = $this.parent().data('x');
 	    		var _y = $this.parent().data('y') || false;
 	    		var _v = $this.val();
+	    		var _cv = self._get_item(_x, _y).value;
 	    		
-	    		if (self._get_item(_x, _y).value != _v) {
+	    		if (_cv != _v) {
 	    			$this.animate({'background-color': '#eae9e9'});
 	    		} else {
 	    			$this.animate({'background-color': 'initial'});
