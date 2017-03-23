@@ -22,15 +22,16 @@
 
 from openerp import models, fields, api
 from manzano_consts import PRICE_TYPES
+import openerp.addons.decimal_precision as dp
 
 
 class product_supplier_info(models.Model):
     _inherit = 'product.supplierinfo'
 
-    price_area_min_width = fields.Float(string="Min. Width", default=0.0)
-    price_area_max_width = fields.Float(string="Max. Width", default=0.0)
-    price_area_min_height = fields.Float(string="Min. Height", default=0.0)
-    price_area_max_height = fields.Float(string="Max. Height", default=0.0)
+    price_area_min_width = fields.Float(string="Min. Width", default=0.0, digits=dp.get_precision('Product Price'))
+    price_area_max_width = fields.Float(string="Max. Width", default=0.0, digits=dp.get_precision('Product Price'))
+    price_area_min_height = fields.Float(string="Min. Height", default=0.0, digits=dp.get_precision('Product Price'))
+    price_area_max_height = fields.Float(string="Max. Height", default=0.0, digits=dp.get_precision('Product Price'))
 
     price_type = fields.Selection(
             PRICE_TYPES,

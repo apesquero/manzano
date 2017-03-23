@@ -59,7 +59,7 @@
 	                	</group>
                 	</group>
                 	<div attrs="{'invisible':[('cost_price_type', 'not in', ['table_1d','table_2d'])]}">
-	               		<field name="cost_prices_table" widget="manzano_multi_dimension_table" mode="cost_price_type" />
+                		<field name="cost_prices_table" widget="manzano_multi_dimension_table" mode="cost_price_type" />
 	                	<button name="%(launch_manzano_wizard_mdtable_cost_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
 	                </div>
             	</page>

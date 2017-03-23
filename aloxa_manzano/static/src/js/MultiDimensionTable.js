@@ -21,48 +21,40 @@
 odoo.define('aloxa_manzano.MultiDimensionTableField', function (require) {
 "use strict";
 
-var ajax = require('web.ajax');
-var config = require('web.config');
 var core = require('web.core');
-var data = require('web.data');
-var Dialog = require('web.Dialog');
 var Model = require('web.Model');
 var form_common = require('web.form_common');
-var framework = require('web.framework');
-var session = require('web.session');
-
-var _t = core._t;
-var qweb = core.qweb;
+var data = require('web.data');
 
 var MultiDimensionTable = form_common.AbstractField.extend({
+	/** GLOBAR VARS **/
 	_MODE : { TABLE_1D:'table_1d', TABLE_2D:'table_2d' },
 
-	
+	/** WIDGET PARAMS **/
     template: 'aloxa_manzano.MultiDimensionTableView',
 
+    /** INITIALIZE FUNCTIONS **/
     init: function () {
         this._super.apply(this, arguments);
 
         this.tableType_field = this.node.attrs.mode || false;
-        
-         console.log(this);
-        
+        this.tableType = this._MODE.TABLE_1D;
+
         this.ds_model = new data.DataSetSearch(this, this.view.model);
         this.model_product_prices_table = new Model("product.prices_table");
-        this.model_view = new Model(this.view.model);
-        
+
         this.isInvisible = true;
+        this.inEditMode = false;
         this.values = [];
     },
 
     start: function () {
-        // use actual_mode property on view to know if the view is in create mode anymore
-        this.view.on("change:actual_mode", this, this.on_check_visibility_mode);
-        this.view.on('view_content_has_changed', this, this.on_view_changed);
-        this.on_check_visibility_mode();
+        this.view.on("change:actual_mode", this, this._on_check_visibility_mode);
+        this._on_check_visibility_mode();
         return this._super();
     },
     
+    /** FIELD VALUE MANAGEMENT **/
     commit_value: function (value_) {
     	var self = this;
     	var values = [];
@@ -70,7 +62,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     		var $this = $(this);
     		var _id = $this.data('id');
     		var _x = $this.data('x');
-    		var _y = $this.data('y');
+    		var _y = $this.data('y') || false;
     		var _v = $this.find('input').val();
     		
     		if (self._get_item(_x, _y).value != _v) {
@@ -98,22 +90,23 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     	return _super;
     },
     
+    /** RENDER WIDGET **/
     render_value: function () {
-    	if (!this.isInvisible) {
+    	if (!this.isInvisible && Number.isInteger(this.view.datarecord.id)) {
 	    	var self = this;
-	    	
 	    	this.ds_model.read_ids([this.view.datarecord.id], [this.tableType_field])
 	        .then(function (results) {
 	            self.tableType = results[0][self.tableType_field];
-	            self.render_widget();
+	            self._render_widget();
 	        });
     	}
     },
     
-    render_widget: function () {    	
+    _render_widget: function () {    	
     	if (typeof this.values === 'undefined')
     		return;
     	
+    	var self = this;
     	var table = $('<table>');
     	table.addClass('col-md-12');
     	
@@ -136,7 +129,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     		
     		var tbody_src = '';
     		for (var y in hy) {
-    			tbody_src += `<tr><th class='col-md-1'>${hy[y]}</th>`;
+    			tbody_src += `<tr><th>${hy[y]}</th>`;
     			for (var x in hx) {
     				var item = this._get_item(hx[x], hy[y]);
     				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
@@ -152,19 +145,16 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 			var tbody_src = '';
 			for (var x in hx) {
 				var item = this._get_item(hx[x], false);
-				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='1'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
+				var value = parseFloat(item.value).toFixed(2) || 0.00;
+				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='false'>${value}</td>`;
 			}
 		
 	    	table.append(`<tbody><tr>${tbody_src}</tr></tbody>`);
     	}
     	table.appendTo(this.$el.empty());
-    	this.bind_events();
-    },
-    
-    bind_events: function () {
-    	var self = this;
     	
-    	$('.o_mdtable_item').on('click', function(ev){
+    	// Events
+    	this.$el.find('.o_mdtable_item').on('click', function(ev){
     		var $this = $(this);
     		var inEditMode = self.view.get("actual_mode") === 'edit';
     		if (!inEditMode) {
@@ -174,38 +164,49 @@ var MultiDimensionTable = form_common.AbstractField.extend({
                 core.bus.trigger('click', ev);
     		}
     	});
-    },
-    
-    on_view_changed: function () {
-    	var self = this;
     	
-    	/*this.ds_model.read_ids([this.view.datarecord.id], [this.tableType_field])
-        .then(function (results) {
-            if (self.tableType !== results[0][self.tableType_field]) {
-            	self.render_widget();
-            }
-        });*/
+    	this._redraw_table_items();
     },
     
-    on_check_visibility_mode: function () {
+    /** EVENT LISTENERS **/
+    _on_check_visibility_mode: function () {
     	this.isInvisible = this.view.get("actual_mode") === 'create';
-    	
-    	var inEditMode = this.view.get("actual_mode") === 'edit';
+    	this.inEditMode = this.view.get("actual_mode") === 'edit';
+    	this._redraw_table_items();
+    },
+    
+    /** HELPER FUNCTIONS **/
+    _redraw_table_items: function() {
+    	var self = this;
 		this.$el.find('.o_mdtable_item').each(function(){
 			var $this = $(this);
-			if (inEditMode) {
+			if (self.inEditMode) {
 				$this.html(`<input type='text' value='${$this.text()}' />`);
 			} else {
 				$this.text($this.find('input').val());
 			}
 		});
+		
+		if (self.inEditMode) {
+	    	this.$el.find('.o_mdtable_item input').on('change', function(ev){
+	    		var $this = $(this);
+	    		var _x = $this.parent().data('x');
+	    		var _y = $this.parent().data('y') || false;
+	    		var _v = $this.val();
+	    		
+	    		if (self._get_item(_x, _y).value != _v) {
+	    			$this.animate({'background-color': '#eae9e9'});
+	    		} else {
+	    			$this.animate({'background-color': 'initial'});
+	    		}
+	    	});
+		}
     },
-    
     
     _get_item(x, y) {
     	var value = false;
     	this.values.forEach(function(item, index) {
-    		if ((!item.pos_y && item.pos_x == x) || (item.pos_x == x && item.pos_y == y)) {
+    		if ((!y && item.pos_x == x) || (item.pos_x == x && item.pos_y == y)) {
     			value = item;
     			return;
     		}
