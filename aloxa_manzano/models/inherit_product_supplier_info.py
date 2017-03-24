@@ -40,3 +40,34 @@ class product_supplier_info(models.Model):
             default='standard',
         )
     prices_table = fields.One2many('product.prices_table', 'supplier_product_id', string="Supplier Prices Table")
+
+    @api.depends('price')
+    def get_supplier_price(self):
+
+        result = {}
+        width = self.env.context and self.env.context.get('width') or False
+        height = self.env.context and self.env.context.get('height') or False
+
+        product_prices_table_obj = self.env['product.prices_table']
+        for record in self:
+            if not width and not height:
+                result[record.id] = False
+            else:
+                if record.price_type == 'table_2d':
+                    res = product_prices_table_obj.search([
+                        ('supplier_product_id', '=', record.product_tmpl_id.id),
+                        ('pos_x', '=', width),
+                        ('pos_y', '=', height)
+                    ], limit=1)
+                    result[record.id] = res and res.value or False
+                elif record.price_type == 'table_1d':
+                    res = product_prices_table_obj.search([
+                        ('supplier_product_id', '=', record.product_tmpl_id.id),
+                        ('pos_x', '=', width)
+                    ], limit=1)
+                    result[record.id] = res and res.value or False
+                elif record.price_type == 'area':
+                    result[record.id] = record.price * width * height
+            if not result[record.id]:
+                result[record.id] = record.price
+        return result

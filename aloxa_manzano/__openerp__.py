@@ -31,6 +31,7 @@
     'depends': [
         'sale',
         'stock',
+        'purchase',
     ],
     'external_dependencies': {
         'python': [
@@ -44,6 +45,7 @@
         'views/inherit_product_supplier_info.xml',
         'views/inherit_product_attribute_value.xml',
         'views/inherit_sale_order.xml',
+        'views/inherit_purchase_order.xml',
     ],
     'qweb': [
         'static/src/xml/*.xml',

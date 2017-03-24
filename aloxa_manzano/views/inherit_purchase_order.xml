@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	
+	<record id="view_purchase_order_form" model="ir.ui.view">
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//tree/field[@name='price_subtotal']" position="before">
+                <field name="manzano_width"/>
+        		<field name="manzano_height"/>
+            </xpath>
+            <xpath expr="//form/sheet/group/group/field[@name='price_unit']" position="before">
+                <field name="manzano_width"/>
+        		<field name="manzano_height"/>
+            </xpath>
+        </field>
+    </record>
+		
+</odoo>

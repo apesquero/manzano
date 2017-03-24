@@ -25,3 +25,4 @@ from . import inherit_product_template
 from . import inherit_product_product
 from . import inherit_product_supplier_info
 from . import inherit_sale_order_line
+from . import inherit_purchase_order_line

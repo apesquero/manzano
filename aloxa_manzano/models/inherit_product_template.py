@@ -59,6 +59,8 @@ class product_template(models.Model):
     def _price_get(self, cr, uid, products, ptype='list_price', context=None):
         if context is None:
             context = {}
+            
+        _logger.info("ESTO ES: %s" % ptype)
 
         res = super(product_template, self)._price_get(cr, uid, products, ptype=ptype, context=context)
         product_uom_obj = self.pool.get('product.uom')
