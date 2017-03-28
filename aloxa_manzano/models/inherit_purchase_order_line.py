@@ -22,6 +22,7 @@
 
 from datetime import datetime
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from openerp.tools.translate import _
 from openerp import models, fields, api, SUPERUSER_ID
 from openerp.exceptions import ValidationError
 
@@ -37,13 +38,13 @@ class purchase_order_line(models.Model):
     def _check_manzano_width(self):
         for record in self:
             if not record.product_id.manzano_check_sale_width_value(record.manzano_width)[0]:
-                raise ValidationError("Invalid width!")
+                raise ValidationError(_("Invalid width!"))
 
     @api.constrains('manzano_height')
     def _check_manzano_height(self):
         for record in self:
             if not record.product_id.manzano_check_sale_height_value(record.manzano_height)[0]:
-                raise ValidationError("Invalid height!")
+                raise ValidationError(_("Invalid height!"))
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def onchange_product_id(self):
@@ -90,7 +91,7 @@ class purchase_order_line(models.Model):
         super(purchase_order_line, self)._onchange_quantity()
         if not self.product_id:
             return
-        
+
         product = self.product_id.with_context(
             width=self.manzano_width,
             height=self.manzano_height
