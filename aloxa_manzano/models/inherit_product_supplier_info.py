@@ -23,8 +23,6 @@
 from openerp import models, fields, api
 from manzano_consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class product_supplier_info(models.Model):
@@ -45,27 +43,27 @@ class product_supplier_info(models.Model):
 
     @api.depends('price')
     def get_supplier_price(self):
+        # FIXME: Mejor usar atributos
+        manzano_width = self.env.context and self.env.context.get('width') or False
+        manzano_height = self.env.context and self.env.context.get('height') or False
 
         result = {}
-        width = self.env.context and self.env.context.get('width') or False
-        height = self.env.context and self.env.context.get('height') or False
-
         product_prices_table_obj = self.env['product.prices_table']
         for record in self:
-            if not width and not height:
+            if not manzano_width and not manzano_height:
                 result[record.id] = False
             else:
                 if record.price_type == 'table_2d':
                     res = product_prices_table_obj.search([
                         ('supplier_product_id', '=', record.id),
-                        ('pos_x', '=', width),
-                        ('pos_y', '=', height)
+                        ('pos_x', '=', manzano_width),
+                        ('pos_y', '=', manzano_height)
                     ], limit=1)
                     result[record.id] = res and res.value or False
                 elif record.price_type == 'table_1d':
                     res = product_prices_table_obj.search([
                         ('supplier_product_id', '=', record.id),
-                        ('pos_x', '=', width)
+                        ('pos_x', '=', manzano_width)
                     ], limit=1)
                     result[record.id] = res and res.value or False
                 elif record.price_type == 'area':

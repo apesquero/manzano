@@ -42,6 +42,7 @@
 	                	<field name="sale_prices_table" widget="manzano_multi_dimension_table" mode="sale_price_type" />
 	                	<button name="%(launch_manzano_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
             		</div>
+            		<!--
             		<group name="cost_price_type_g" string="Cost Price Type">
 	                    <label for="cost_price_type"/>
 	                    <div>
@@ -62,6 +63,7 @@
                 		<field name="cost_prices_table" widget="manzano_multi_dimension_table" mode="cost_price_type" />
 	                	<button name="%(launch_manzano_wizard_mdtable_cost_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
 	                </div>
+	                -->
             	</page>
             </xpath>
 						 	

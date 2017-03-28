@@ -24,8 +24,6 @@ from datetime import datetime
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp import models, fields, api, SUPERUSER_ID
 from openerp.exceptions import ValidationError
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class purchase_order_line(models.Model):
@@ -49,8 +47,7 @@ class purchase_order_line(models.Model):
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def onchange_product_id(self):
-        super(purchase_order_line, self).onchange_product_id()
-        result = {}
+        result = super(purchase_order_line, self).onchange_product_id()
         if not self.product_id:
             return result
 

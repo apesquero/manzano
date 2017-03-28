@@ -24,8 +24,6 @@ import openerp
 from openerp import api, tools, SUPERUSER_ID
 from openerp.osv import osv, fields, expression
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class product_product(osv.osv):
@@ -36,7 +34,7 @@ class product_product(osv.osv):
 
         product_uom_obj = self.pool.get('product.uom')
         product_ids = self.browse(cr, uid, ids, context=context)
-        sale_prices = product_ids.get_sale_price(context=context)
+        sale_prices = product_ids.get_sale_price(cr, uid, ids, context=context)
         for product in product_ids:
             if 'uom' in context:
                 uom = product.uom_id
@@ -60,7 +58,7 @@ class product_product(osv.osv):
             uom = product.uom_id
             value = product_uom_obj._compute_price(cr, uid,
                     context['uom'], value, uom.id)
-        value -= (product.get_sale_price(context=context)[0] * product.price_extra_perc) / 100.0
+        value -= (product.get_sale_price(cr, uid, id, context=context)[id] * product.price_extra_perc) / 100.0
         value -= product.price_extra
 
         return product.write({'list_price': value})
@@ -96,30 +94,32 @@ class product_product(osv.osv):
     def get_sale_price(self, cr, uid, ids, context=False):
         result = dict.fromkeys(ids, False)
         product_ids = self.browse(cr, uid, ids, context=context)
-        width = context and context.get('width') or False
-        height = context and context.get('height') or False
+
+        # FIXME: Mejor usar atributos
+        manzano_width = context and context.get('width') or False
+        manzano_height = context and context.get('height') or False
 
         product_prices_table_obj = self.pool.get('product.prices_table')
 
         for product in product_ids:
-            if not width and not height:
+            if not manzano_width and not manzano_height:
                 result[product.id] = False
             else:
                 if product.sale_price_type == 'table_2d':
                     res = product_prices_table_obj.search_read(cr, uid, [
                         ('sale_product_tmpl_id', '=', product.product_tmpl_id.id),
-                        ('pos_x', '=', width),
-                        ('pos_y', '=', height)
+                        ('pos_x', '=', manzano_width),
+                        ('pos_y', '=', manzano_height)
                     ], limit=1, context=context)
                     result[product.id] = res and res[0]['value'] or False
                 elif product.sale_price_type == 'table_1d':
                     res = product_prices_table_obj.search_read(cr, uid, [
                         ('sale_product_tmpl_id', '=', product.product_tmpl_id.id),
-                        ('pos_x', '=', width)
+                        ('pos_x', '=', manzano_width)
                     ], limit=1, context=context)
                     result[product.id] = res and res[0]['value'] or False
                 elif product.sale_price_type == 'area':
-                    result[product.id] = product.list_price * width * height
+                    result[product.id] = product.list_price * manzano_width * manzano_height
             if not result[product.id]:
                 result[product.id] = product.list_price
         return result

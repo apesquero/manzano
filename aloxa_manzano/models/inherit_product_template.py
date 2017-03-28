@@ -23,8 +23,7 @@
 from openerp import models, fields, api
 from manzano_consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
+
 
 class product_template(models.Model):
     _inherit = 'product.template'
@@ -43,24 +42,22 @@ class product_template(models.Model):
 #     sale_prices_table_attr_axe_x = fields.Many2one('product.attribute.line', 'Sale Price Table Attribute Axe X')
 #     sale_prices_table_attr_axe_y = fields.Many2one('product.attribute.line', 'Sale Price Table Attribute Axe Y')
 
-    cost_price_area_min_width = fields.Float(string="Min. Width", default=0.0, digits=dp.get_precision('Product Price'))
-    cost_price_area_max_width = fields.Float(string="Max. Width", default=0.0, digits=dp.get_precision('Product Price'))
-    cost_price_area_min_height = fields.Float(string="Min. Height", default=0.0, digits=dp.get_precision('Product Price'))
-    cost_price_area_max_height = fields.Float(string="Max. Height", default=0.0, digits=dp.get_precision('Product Price'))
-    cost_price_type = fields.Selection(
-            PRICE_TYPES,
-            string='Cost Price Type',
-            required=True,
-            default='standard',
-        )
-    cost_prices_table = fields.One2many('product.prices_table', 'cost_product_tmpl_id', string="Cost Prices Table")
+#     cost_price_area_min_width = fields.Float(string="Min. Width", default=0.0, digits=dp.get_precision('Product Price'))
+#     cost_price_area_max_width = fields.Float(string="Max. Width", default=0.0, digits=dp.get_precision('Product Price'))
+#     cost_price_area_min_height = fields.Float(string="Min. Height", default=0.0, digits=dp.get_precision('Product Price'))
+#     cost_price_area_max_height = fields.Float(string="Max. Height", default=0.0, digits=dp.get_precision('Product Price'))
+#     cost_price_type = fields.Selection(
+#             PRICE_TYPES,
+#             string='Cost Price Type',
+#             required=True,
+#             default='standard',
+#         )
+#     cost_prices_table = fields.One2many('product.prices_table', 'cost_product_tmpl_id', string="Cost Prices Table")
 
     @api.v7
     def _price_get(self, cr, uid, products, ptype='list_price', context=None):
         if context is None:
             context = {}
-            
-        _logger.info("ESTO ES: %s" % ptype)
 
         res = super(product_template, self)._price_get(cr, uid, products, ptype=ptype, context=context)
         product_uom_obj = self.pool.get('product.uom')
