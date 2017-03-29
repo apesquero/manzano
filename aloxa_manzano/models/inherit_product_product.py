@@ -153,20 +153,20 @@ class product_product(osv.osv):
     def manzano_check_sale_width_value(self, cr, uid, id, width, context=None):
         product = self.browse(cr, uid, id, context=context)
         product_prices_table_obj = self.pool.get('product.prices_table')
-        if product.cost_price_type in ['table_1d', 'table_2d']:
+        if product.sale_price_type in ['table_1d', 'table_2d']:
             return product_prices_table_obj.search_count(cr, uid, [('sale_product_tmpl_id', '=', product.product_tmpl_id.id),
                                                                    ('pos_x', '=', width)], context=context) > 0
-        elif product.cost_price_type == 'area':
+        elif product.sale_price_type == 'area':
             return width >= product.sale_price_area_min_width and width <= product.sale_price_area_max_width
         return True
 
     def manzano_check_sale_height_value(self, cr, uid, id, height, context=None):
         product = self.browse(cr, uid, id, context=context)
         product_prices_table_obj = self.pool.get('product.prices_table')
-        if product.cost_price_type in ['table_1d', 'table_2d']:
+        if product.sale_price_type in ['table_1d', 'table_2d']:
             return product_prices_table_obj.search_count(cr, uid, [('sale_product_tmpl_id', '=', product.product_tmpl_id.id), 
                                                                    ('pos_y', '=', height)], context=context) > 0
-        elif product.cost_price_type == 'area':
+        elif product.sale_price_type == 'area':
             return height >= product.sale_price_area_min_height and height <= product.sale_price_area_max_height
 
         return True

@@ -39,6 +39,7 @@
                 key2="client_action_multi"/>
                 
     <!-- WIZARD COST PRICES -->
+    <!--
 	<record model="ir.ui.view" id="manzano_wizard_mdtable_cost_import_data_form_view">
         <field name="name">wizard.form</field>
         <field name="model">manzano.wizard.mdtable</field>
@@ -64,6 +65,7 @@
                 view_id="aloxa_manzano.manzano_wizard_mdtable_cost_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
+    -->
                 
     <!-- WIZARD SUPPLIER PRICES -->
 	<record model="ir.ui.view" id="manzano_wizard_mdtable_supplier_import_data_form_view">
