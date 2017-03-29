@@ -42,28 +42,6 @@
 	                	<field name="sale_prices_table" widget="manzano_multi_dimension_table" mode="sale_price_type" />
 	                	<button name="%(launch_manzano_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
             		</div>
-            		<!--
-            		<group name="cost_price_type_g" string="Cost Price Type">
-	                    <label for="cost_price_type"/>
-	                    <div>
-	                        <field name="cost_price_type" />
-	                    </div>
-	                </group>
-	                <group attrs="{'invisible':[('cost_price_type', '!=', 'area')]}">
-	                	<group>
-	                		<field name="cost_price_area_min_width" />
-	                		<field name="cost_price_area_max_width" />
-	                	</group>
-	                	<group>
-	                		<field name="cost_price_area_min_height" />
-	                		<field name="cost_price_area_max_height" />
-	                	</group>
-                	</group>
-                	<div attrs="{'invisible':[('cost_price_type', 'not in', ['table_1d','table_2d'])]}">
-                		<field name="cost_prices_table" widget="manzano_multi_dimension_table" mode="cost_price_type" />
-	                	<button name="%(launch_manzano_wizard_mdtable_cost_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
-	                </div>
-	                -->
             	</page>
             </xpath>
 						 	
