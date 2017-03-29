@@ -34,7 +34,7 @@ class product_product(osv.osv):
 
         product_uom_obj = self.pool.get('product.uom')
         product_ids = self.browse(cr, uid, ids, context=context)
-        sale_prices = product_ids.get_sale_price(cr, uid, ids, context=context)
+        sale_prices = product_ids.get_sale_price(context=context)
         for product in product_ids:
             if 'uom' in context:
                 uom = product.uom_id
@@ -58,7 +58,7 @@ class product_product(osv.osv):
             uom = product.uom_id
             value = product_uom_obj._compute_price(cr, uid,
                     context['uom'], value, uom.id)
-        value -= (product.get_sale_price(cr, uid, id, context=context)[id] * product.price_extra_perc) / 100.0
+        value -= (product.get_sale_price(context=context)[id] * product.price_extra_perc) / 100.0
         value -= product.price_extra
 
         return product.write({'list_price': value})

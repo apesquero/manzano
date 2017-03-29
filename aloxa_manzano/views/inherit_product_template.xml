@@ -8,7 +8,7 @@
         
 			<xpath expr="//notebook/page[1]" position="after">
 				<page string="Sale Price Type">
-	                <group name="sale_price_type_g" string="Sale Price Type">
+	                <group name="sale_price_type_g">
 	                    <label for="sale_price_type"/>
 	                    <div>
 	                        <field name="sale_price_type" />
