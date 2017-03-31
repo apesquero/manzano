@@ -67,7 +67,7 @@ class product_supplier_info(models.Model):
                     ], limit=1)
                     result[record.id] = res and res.value or False
                 elif record.price_type == 'area':
-                    result[record.id] = record.price * width * height
+                    result[record.id] = record.price * manzano_width * manzano_height
             if not result[record.id]:
                 result[record.id] = record.price
         return result
