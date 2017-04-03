@@ -132,7 +132,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     			tbody_src += `<tr><th>${hy[y]}</th>`;
     			for (var x in hx) {
     				var item = this._get_item(hx[x], hy[y]);
-    				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
+    				tbody_src += `<td class='o_mdtable_item ${!item.value && 'o_mdtable_item_empty'}' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
     			}
     			tbody_src += '</tr>';
     		}
@@ -181,7 +181,8 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 		this.$el.find('.o_mdtable_item').each(function(){
 			var $this = $(this);
 			if (self.inEditMode) {
-				$this.html(`<input type='text' value='${$this.text()}' />`);
+				var bckgColor = ($this.hasClass('o_mdtable_item_empty'))?'#deb390':'initial';
+				$this.html(`<input type='text' value='${$this.text()}' style='background-color:${bckgColor}'/>`);
 			} else {
 				$this.text($this.find('input').val());
 			}
@@ -196,9 +197,17 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 	    		var _cv = self._get_item(_x, _y).value;
 	    		
 	    		if (_cv != _v) {
-	    			$this.animate({'background-color': '#eae9e9'});
+	    			if (!_v || _v == 0) {
+	    				$this.animate({'background-color': '#deb390'});
+	    			} else {
+	    				$this.animate({'background-color': '#eae9e9'});
+	    			}
 	    		} else {
-	    			$this.animate({'background-color': 'initial'});
+	    			if ($this.parent().hasClass('o_mdtable_item_empty')) {
+	    				$this.animate({'background-color': '#deb390'});
+	    			} else {
+	    				$this.animate({'background-color': 'initial'});
+	    			}
 	    		}
 	    	});
 		}

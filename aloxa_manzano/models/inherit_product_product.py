@@ -24,8 +24,8 @@ import openerp
 from openerp import api, tools, SUPERUSER_ID
 from openerp.osv import osv, fields, expression
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
+from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 
 class product_product(osv.osv):
@@ -115,7 +115,7 @@ class product_product(osv.osv):
 
         for product in product_ids:
             if not manzano_width and not manzano_height:
-                result[product.id] = product.list_price
+                result[product.id] = False
             else:
                 product_prices_table_obj = self.pool.get('product.prices_table')
                 manzano_width = self.manzano_normalize_sale_width_value(cr, uid, product.id, manzano_width, context=context)
@@ -136,8 +136,7 @@ class product_product(osv.osv):
                 elif product.sale_price_type == 'area':
                     result[product.id] = product.list_price * manzano_width * manzano_height
             if not result[product.id]:
-                print ""
-                # TODO: Disparar un error
+                result[product.id] = product.list_price
         return result
 
     def _get_price_extra_percentage(self, cr, uid, ids, name, args, context=None):
@@ -167,27 +166,22 @@ class product_product(osv.osv):
         return result
 
     # TODO: Estos metodos necesitarán ser reescritos cuando se usen los atributos
-    def manzano_check_sale_width_value(self, cr, uid, id, width, context=None):
+    def manzano_check_sale_dim_values(self, cr, uid, id, width, height, context=None):
         product = self.browse(cr, uid, id, context=context)
         if product.sale_price_type in ['table_1d', 'table_2d']:
             product_prices_table_obj = self.pool.get('product.prices_table')
             norm_width = self.manzano_normalize_sale_width_value(cr, uid, id, width, context=context)
+            if product.sale_price_type == 'table_2d':
+                norm_height = self.manzano_normalize_sale_height_value(cr, uid, id, height, context=context)
+                return product_prices_table_obj.search_count(cr, uid, [('sale_product_tmpl_id', '=', product.product_tmpl_id.id),
+                                                                       ('pos_x', '=', norm_width),
+                                                                       ('pos_y', '=', norm_height),
+                                                                       ('value', '!=', 0)], context=context) > 0
             return product_prices_table_obj.search_count(cr, uid, [('sale_product_tmpl_id', '=', product.product_tmpl_id.id),
-                                                                   ('pos_x', '=', norm_width)], context=context) > 0
+                                                                   ('pos_x', '=', norm_width),
+                                                                   ('value', '!=', 0)], context=context) > 0
         elif product.sale_price_type == 'area':
             return width >= product.sale_price_area_min_width and width <= product.sale_price_area_max_width
-        return True
-
-    def manzano_check_sale_height_value(self, cr, uid, id, height, context=None):
-        product = self.browse(cr, uid, id, context=context)
-        if product.sale_price_type == 'table_2d':
-            product_prices_table_obj = self.pool.get('product.prices_table')
-            norm_height = self.manzano_normalize_sale_height_value(cr, uid, id, height, context=context)
-            return product_prices_table_obj.search_count(cr, uid, [('sale_product_tmpl_id', '=', product.product_tmpl_id.id), 
-                                                                   ('pos_y', '=', norm_height)], context=context) > 0
-        elif product.sale_price_type == 'area':
-            return height >= product.sale_price_area_min_height and height <= product.sale_price_area_max_height
-
         return True
 
     def manzano_normalize_sale_width_value(self, cr, uid, id, width, context=None):

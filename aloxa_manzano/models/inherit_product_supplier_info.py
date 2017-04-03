@@ -23,8 +23,8 @@
 from openerp import models, fields, api
 from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
+from openerp.tools.translate import _
+from openerp.exceptions import UserError
 
 
 class product_supplier_info(models.Model):
@@ -55,28 +55,21 @@ class product_supplier_info(models.Model):
         return result
 
     # TODO: Estos metodos necesitarán ser reescritos cuando se usen los atributos
-    def manzano_check_width_value(self, width):
-        self.ensure_one()
+    def manzano_check_dim_values(self, cr, uid, id, width, height, context=None):
         if self.price_type in ['table_1d', 'table_2d']:
-            product_prices_table_obj = self.env['product.prices_table']
-            norm_width = self.manzano_normalize_width_value(width)
-            return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
-                                                          ('pos_x', '=', norm_width)]) > 0
+            product_prices_table_obj = self.pool.get('product.prices_table')
+            norm_width = self.manzano_normalize_width_value(cr, uid, id, width, context=context)
+            if self.price_type == 'table_2d':
+                norm_height = self.manzano_normalize_height_value(cr, uid, id, height, context=context)
+                return product_prices_table_obj.search_count(cr, uid, [('supplier_product_id', '=', self.id),
+                                                                       ('pos_x', '=', norm_width),
+                                                                       ('pos_y', '=', norm_height),
+                                                                       ('value', '!=', 0)], context=context) > 0
+            return product_prices_table_obj.search_count(cr, uid, [('supplier_product_id', '=', self.id),
+                                                                   ('pos_x', '=', norm_width),
+                                                                   ('value', '!=', 0)], context=context) > 0
         elif self.price_type == 'area':
             return width >= self.price_area_min_width and width <= self.price_area_max_width
-        return True
-
-    def manzano_check_height_value(self, height):
-        self.ensure_one()
-        if self.price_type == 'table_2d':
-            product_prices_table_obj = self.env['product.prices_table']
-            norm_height = self.manzano_normalize_height_value(height)
-            _logger.info(norm_height)
-            return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
-                                                          ('pos_y', '=', norm_height)]) > 0
-        elif self.price_type == 'area':
-            return height >= self.price_area_min_height and height <= self.price_area_max_height
-
         return True
 
     def manzano_normalize_width_value(self, width):
@@ -107,7 +100,7 @@ class product_supplier_info(models.Model):
         result = {}
         for record in self:
             if not manzano_width and not manzano_height:
-                result[record.id] = record.price
+                result[record.id] = False
             else:
                 product_prices_table_obj = self.env['product.prices_table']
                 manzano_width = record.manzano_normalize_width_value(manzano_width)
@@ -128,6 +121,5 @@ class product_supplier_info(models.Model):
                 elif record.price_type == 'area':
                     result[record.id] = record.price * manzano_width * manzano_height
             if not result[record.id]:
-                print ""
-                # TODO: Disparar un error
+                result[record.id] = record.price
         return result

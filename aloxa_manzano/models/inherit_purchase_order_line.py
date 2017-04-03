@@ -53,7 +53,7 @@ class purchase_order_line(models.Model):
                     width=self.manzano_width,
                     height=self.manzano_height
                 )
-                if not seller.manzano_check_width_value(record.manzano_width):
+                if not seller.manzano_check_dim_values(record.manzano_width, record.manzano_height):
                     raise ValidationError(_("Invalid width!"))
 
     @api.constrains('manzano_height')
@@ -75,7 +75,7 @@ class purchase_order_line(models.Model):
                     width=self.manzano_width,
                     height=self.manzano_height
                 )
-                if not seller.manzano_check_height_value(record.manzano_height):
+                if not seller.manzano_check_dim_values(record.manzano_width, record.manzano_height):
                     raise ValidationError(_("Invalid height!"))
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')

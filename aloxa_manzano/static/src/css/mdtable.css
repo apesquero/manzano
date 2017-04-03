@@ -27,3 +27,7 @@
 .o_mdtable {
 	overflow: auto;
 }
+
+.o_mdtable_item_empty, .o_mdtable_item_empty input {
+	background-color: #deb390;
+}

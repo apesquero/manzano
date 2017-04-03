@@ -22,8 +22,6 @@
 
 from openerp import models, fields, api
 from openerp.exceptions import ValidationError
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class sale_order_line(models.Model):
@@ -36,13 +34,13 @@ class sale_order_line(models.Model):
     @api.constrains('manzano_width')
     def _check_manzano_width(self):
         for record in self:
-            if not record.product_id.manzano_check_sale_width_value(record.manzano_width)[0]:
+            if not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
                 raise ValidationError("Invalid width!")
 
     @api.constrains('manzano_height')
     def _check_manzano_height(self):
         for record in self:
-            if not record.product_id.manzano_check_sale_height_value(record.manzano_height)[0]:
+            if not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
                 raise ValidationError("Invalid height!")
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
