@@ -21,7 +21,7 @@
 ##############################################################################
 
 from openerp import models, fields, api
-from manzano_consts import PRICE_TYPES
+from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
 
 

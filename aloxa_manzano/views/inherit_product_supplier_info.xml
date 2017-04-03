@@ -24,8 +24,8 @@
                 	</group>
                 </group>
                 <div attrs="{'invisible':[('price_type', 'not in', ['table_1d','table_2d'])]}">
-                	<field name="prices_table" widget="manzano_multi_dimension_table" mode="price_type" />
-                	<button name="%(launch_manzano_wizard_mdtable_supplier_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
+                	<field name="prices_table" widget="mdtable" mode="price_type" />
+                	<button name="%(launch_wizard_mdtable_supplier_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
             	</div>
             </xpath>
 						 	

@@ -4,7 +4,7 @@
 	<!-- inherit from web assets backend -->
 	<template id="assets_backend" inherit_id="web.assets_backend">
 		<xpath expr="." position="inside">
-			<link rel="stylesheet" href="/aloxa_manzano/static/src/css/multi_dimension_table.css" />
+			<link rel="stylesheet" href="/aloxa_manzano/static/src/css/mdtable.css" />
 			
 			<script type="text/javascript" src="/aloxa_manzano/static/src/js/MultiDimensionTable.js"></script>
 		</xpath>
@@ -12,9 +12,9 @@
 	
 	
 	<!-- WIZARD SALE PRICES -->
-	<record model="ir.ui.view" id="manzano_wizard_mdtable_sale_import_data_form_view">
+	<record model="ir.ui.view" id="wizard_mdtable_sale_import_data_form_view">
         <field name="name">wizard.form</field>
-        <field name="model">manzano.wizard.mdtable</field>
+        <field name="model">wizard.mdtable</field>
         <field name="arch" type="xml">
             <form string="Import Sale Prices Data">
                 <group>
@@ -30,11 +30,11 @@
         </field>
     </record>
 
-    <act_window id="launch_manzano_wizard_mdtable_sale_import_data"
+    <act_window id="launch_wizard_mdtable_sale_import_data"
                 name="Import Sale Prices Data"
-                res_model="manzano.wizard.mdtable"
+                res_model="wizard.mdtable"
                 view_mode="form"
-                view_id="aloxa_manzano.manzano_wizard_mdtable_sale_import_data_form_view"
+                view_id="aloxa_manzano.wizard_mdtable_sale_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
                 
@@ -68,9 +68,9 @@
     -->
                 
     <!-- WIZARD SUPPLIER PRICES -->
-	<record model="ir.ui.view" id="manzano_wizard_mdtable_supplier_import_data_form_view">
+	<record model="ir.ui.view" id="wizard_mdtable_supplier_import_data_form_view">
         <field name="name">wizard.form</field>
-        <field name="model">manzano.wizard.mdtable</field>
+        <field name="model">wizard.mdtable</field>
         <field name="arch" type="xml">
             <form string="Import Supplier Prices Data">
                 <group>
@@ -86,11 +86,11 @@
         </field>
     </record>
 
-    <act_window id="launch_manzano_wizard_mdtable_supplier_import_data"
+    <act_window id="launch_wizard_mdtable_supplier_import_data"
                 name="Import Supplier Prices Data"
-                res_model="manzano.wizard.mdtable"
+                res_model="wizard.mdtable"
                 view_mode="form"
-                view_id="aloxa_manzano.manzano_wizard_mdtable_supplier_import_data_form_view"
+                view_id="aloxa_manzano.wizard_mdtable_supplier_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
 

@@ -30,7 +30,7 @@ _logger = logging.getLogger(__name__)
 
 
 class Wizard_Multi_Dimension_Table(models.TransientModel):
-    _name = 'manzano.wizard.mdtable'
+    _name = 'wizard.mdtable'
 
     @api.multi
     def import_sale_prices_from_file(self):

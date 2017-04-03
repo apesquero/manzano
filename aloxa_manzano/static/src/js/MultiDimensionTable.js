@@ -228,7 +228,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     },
 });
 
-core.form_widget_registry.add('manzano_multi_dimension_table', MultiDimensionTable);
+core.form_widget_registry.add('mdtable', MultiDimensionTable);
 
 return MultiDimensionTable;
 });

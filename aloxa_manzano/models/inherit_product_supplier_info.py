@@ -21,8 +21,10 @@
 ##############################################################################
 
 from openerp import models, fields, api
-from manzano_consts import PRICE_TYPES
+from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class product_supplier_info(models.Model):
@@ -41,6 +43,61 @@ class product_supplier_info(models.Model):
         )
     prices_table = fields.One2many('product.prices_table', 'supplier_product_id', string="Supplier Prices Table")
 
+    def get_price_table_headers(self):
+        result = {'x': [], 'y': []}
+        for rec in self.prices_table:
+            result['x'].append(rec.pos_x)
+            result['y'].append(rec.pos_y)
+        result.update({
+            'x': sorted(list(set(result['x']))),
+            'y': sorted(list(set(result['y'])))
+        })
+        return result
+
+    # TODO: Estos metodos necesitarán ser reescritos cuando se usen los atributos
+    def manzano_check_width_value(self, width):
+        self.ensure_one()
+        if self.price_type in ['table_1d', 'table_2d']:
+            product_prices_table_obj = self.env['product.prices_table']
+            norm_width = self.manzano_normalize_width_value(width)
+            return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
+                                                          ('pos_x', '=', norm_width)]) > 0
+        elif self.price_type == 'area':
+            return width >= self.price_area_min_width and width <= self.price_area_max_width
+        return True
+
+    def manzano_check_height_value(self, height):
+        self.ensure_one()
+        if self.price_type == 'table_2d':
+            product_prices_table_obj = self.env['product.prices_table']
+            norm_height = self.manzano_normalize_height_value(height)
+            _logger.info(norm_height)
+            return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
+                                                          ('pos_y', '=', norm_height)]) > 0
+        elif self.price_type == 'area':
+            return height >= self.price_area_min_height and height <= self.price_area_max_height
+
+        return True
+
+    def manzano_normalize_width_value(self, width):
+        headers = self.get_price_table_headers()
+        norm_val = width
+        num_x_headers = len(headers['x'])
+        for index in range(num_x_headers-1):
+            if width >= headers['x'][index] and width < headers['x'][num_x_headers-1]:
+                norm_val = headers['x'][index]
+        return norm_val
+
+    def manzano_normalize_height_value(self, height):
+        headers = self.get_price_table_headers()
+        norm_val = height
+        num_y_headers = len(headers['y'])
+        for index in range(num_y_headers-1):
+            if height >= headers['y'][index] and height < headers['y'][num_y_headers-1]:
+                norm_val = headers['y'][index]
+        return norm_val
+    # ---
+
     @api.depends('price')
     def get_supplier_price(self):
         # FIXME: Mejor usar atributos
@@ -48,12 +105,14 @@ class product_supplier_info(models.Model):
         manzano_height = self.env.context and self.env.context.get('height') or False
 
         result = {}
-        product_prices_table_obj = self.env['product.prices_table']
         for record in self:
             if not manzano_width and not manzano_height:
-                result[record.id] = False
+                result[record.id] = record.price
             else:
+                product_prices_table_obj = self.env['product.prices_table']
+                manzano_width = record.manzano_normalize_width_value(manzano_width)
                 if record.price_type == 'table_2d':
+                    manzano_height = record.manzano_normalize_height_value(manzano_height)
                     res = product_prices_table_obj.search([
                         ('supplier_product_id', '=', record.id),
                         ('pos_x', '=', manzano_width),
@@ -69,5 +128,6 @@ class product_supplier_info(models.Model):
                 elif record.price_type == 'area':
                     result[record.id] = record.price * manzano_width * manzano_height
             if not result[record.id]:
-                result[record.id] = record.price
+                print ""
+                # TODO: Disparar un error
         return result

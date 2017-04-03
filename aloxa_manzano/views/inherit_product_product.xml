@@ -40,11 +40,11 @@
 	               			</group>
 	               		</group-->
 	               		<div>
-	                		<field name="sale_prices_table" widget="manzano_multi_dimension_table" mode="sale_price_type" />
+	                		<field name="sale_prices_table" widget="mdtable" mode="sale_price_type" />
 	                	</div>
 	                	<div>
 	                		<group>
-	                			<button name="%(launch_manzano_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
+	                			<button name="%(launch_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
             				</group>
             			</div>
             		</div>
