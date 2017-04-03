@@ -21,13 +21,13 @@
 ##############################################################################
 
 {
-    'name': 'Aloxa Manzano',
+    'name': 'Price Dimension',
     'version': '1.0',
     'author': "Alexandre Díaz (Aloxa Solucións S.L.) <alex@aloxa.eu>",
     'website': 'https://www.eiqui.com',
     'category': 'eiqui/manzano',
-    'summary': "Aloxa Manzano",
-    'description': "Aloxa Manzano",
+    'summary': "Price Dimension",
+    'description': "Price Dimension",
     'depends': [
         'sale',
         'stock',
