@@ -23,8 +23,6 @@
 from openerp import models, fields, api
 from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
-from openerp.tools.translate import _
-from openerp.exceptions import UserError
 
 
 class product_supplier_info(models.Model):

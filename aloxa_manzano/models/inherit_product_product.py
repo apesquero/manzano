@@ -24,8 +24,6 @@ import openerp
 from openerp import api, tools, SUPERUSER_ID
 from openerp.osv import osv, fields, expression
 import openerp.addons.decimal_precision as dp
-from openerp.tools.translate import _
-from openerp.exceptions import UserError
 
 
 class product_product(osv.osv):
