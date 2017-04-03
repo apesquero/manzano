@@ -4,9 +4,9 @@
 	<!-- inherit from web assets backend -->
 	<template id="assets_backend" inherit_id="web.assets_backend">
 		<xpath expr="." position="inside">
-			<link rel="stylesheet" href="/aloxa_manzano/static/src/css/mdtable.css" />
+			<link rel="stylesheet" href="/price_dimension/static/src/css/mdtable.css" />
 			
-			<script type="text/javascript" src="/aloxa_manzano/static/src/js/MultiDimensionTable.js"></script>
+			<script type="text/javascript" src="/price_dimension/static/src/js/MultiDimensionTable.js"></script>
 		</xpath>
 	</template>
 	
@@ -34,7 +34,7 @@
                 name="Import Sale Prices Data"
                 res_model="wizard.mdtable"
                 view_mode="form"
-                view_id="aloxa_manzano.wizard_mdtable_sale_import_data_form_view"
+                view_id="price_dimension.wizard_mdtable_sale_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
                 
@@ -62,7 +62,7 @@
                 name="Import Cost Prices Data"
                 res_model="manzano.wizard.mdtable"
                 view_mode="form"
-                view_id="aloxa_manzano.manzano_wizard_mdtable_cost_import_data_form_view"
+                view_id="price_dimension.manzano_wizard_mdtable_cost_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
     -->
@@ -90,7 +90,7 @@
                 name="Import Supplier Prices Data"
                 res_model="wizard.mdtable"
                 view_mode="form"
-                view_id="aloxa_manzano.wizard_mdtable_supplier_import_data_form_view"
+                view_id="price_dimension.wizard_mdtable_supplier_import_data_form_view"
                 target="new"
                 key2="client_action_multi"/>
 

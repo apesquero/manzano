@@ -18,7 +18,7 @@
  *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  *****************************************************************************/
-odoo.define('aloxa_manzano.MultiDimensionTableField', function (require) {
+odoo.define('price_dimension.MultiDimensionTableField', function (require) {
 "use strict";
 
 var core = require('web.core');
@@ -31,7 +31,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 	_MODE : { TABLE_1D:'table_1d', TABLE_2D:'table_2d' },
 
 	/** WIDGET PARAMS **/
-    template: 'aloxa_manzano.MultiDimensionTableView',
+    template: 'price_dimension.MultiDimensionTableView',
 
     /** INITIALIZE FUNCTIONS **/
     init: function () {
@@ -132,7 +132,8 @@ var MultiDimensionTable = form_common.AbstractField.extend({
     			tbody_src += `<tr><th>${hy[y]}</th>`;
     			for (var x in hx) {
     				var item = this._get_item(hx[x], hy[y]);
-    				tbody_src += `<td class='o_mdtable_item ${!item.value && 'o_mdtable_item_empty'}' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${parseFloat(item.value).toFixed(2) || '0.00'}</td>`;
+    				var value = parseFloat(item.value).toFixed(2) || '0.00';
+    				tbody_src += `<td class='o_mdtable_item ${!item.value && 'o_mdtable_item_empty'}' data-id='${item.id}' data-x='${item.pos_x}' data-y='${item.pos_y}'>${value}</td>`;
     			}
     			tbody_src += '</tr>';
     		}
@@ -146,7 +147,7 @@ var MultiDimensionTable = form_common.AbstractField.extend({
 			for (var x in hx) {
 				var item = this._get_item(hx[x], false);
 				var value = parseFloat(item.value).toFixed(2) || 0.00;
-				tbody_src += `<td class='o_mdtable_item' data-id='${item.id}' data-x='${item.pos_x}' data-y='false'>${value}</td>`;
+				tbody_src += `<td class='o_mdtable_item ${!item.value && 'o_mdtable_item_empty'}' data-id='${item.id}' data-x='${item.pos_x}' data-y='false'>${value}</td>`;
 			}
 		
 	    	table.append(`<tbody><tr>${tbody_src}</tr></tbody>`);

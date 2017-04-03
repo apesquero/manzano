@@ -77,6 +77,7 @@ class product_supplier_info(models.Model):
         for index in range(num_x_headers-1):
             if width >= headers['x'][index] and width < headers['x'][num_x_headers-1]:
                 norm_val = headers['x'][index]
+                break
         return norm_val
 
     def manzano_normalize_height_value(self, height):
@@ -86,6 +87,7 @@ class product_supplier_info(models.Model):
         for index in range(num_y_headers-1):
             if height >= headers['y'][index] and height < headers['y'][num_y_headers-1]:
                 norm_val = headers['y'][index]
+                break
         return norm_val
     # ---
 

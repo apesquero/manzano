@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="aloxa_manzano.MultiDimensionTableView">
+    <t t-name="price_dimension.MultiDimensionTableView">
     	<div class="o_mdtable"></div>
     </t>
 
