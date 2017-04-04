@@ -42,7 +42,7 @@ class product_supplier_info(models.Model):
     prices_table = fields.One2many('product.prices_table', 'supplier_product_id', string="Supplier Prices Table")
 
     def get_price_table_headers(self):
-        result = {'x': [], 'y': []}
+        result = {'x': [0], 'y': [0]}
         for rec in self.prices_table:
             result['x'].append(rec.pos_x)
             result['y'].append(rec.pos_y)
@@ -53,19 +53,19 @@ class product_supplier_info(models.Model):
         return result
 
     # TODO: Estos metodos necesitarán ser reescritos cuando se usen los atributos
-    def manzano_check_dim_values(self, cr, uid, id, width, height, context=None):
+    def manzano_check_dim_values(self, width, height):
         if self.price_type in ['table_1d', 'table_2d']:
-            product_prices_table_obj = self.pool.get('product.prices_table')
-            norm_width = self.manzano_normalize_width_value(cr, uid, id, width, context=context)
+            product_prices_table_obj = self.env['product.prices_table']
+            norm_width = self.manzano_normalize_width_value(width)
             if self.price_type == 'table_2d':
-                norm_height = self.manzano_normalize_height_value(cr, uid, id, height, context=context)
-                return product_prices_table_obj.search_count(cr, uid, [('supplier_product_id', '=', self.id),
-                                                                       ('pos_x', '=', norm_width),
-                                                                       ('pos_y', '=', norm_height),
-                                                                       ('value', '!=', 0)], context=context) > 0
-            return product_prices_table_obj.search_count(cr, uid, [('supplier_product_id', '=', self.id),
-                                                                   ('pos_x', '=', norm_width),
-                                                                   ('value', '!=', 0)], context=context) > 0
+                norm_height = self.manzano_normalize_height_value(height)
+                return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
+                                                              ('pos_x', '=', norm_width),
+                                                              ('pos_y', '=', norm_height),
+                                                              ('value', '!=', 0)]) > 0
+            return product_prices_table_obj.search_count([('supplier_product_id', '=', self.id),
+                                                          ('pos_x', '=', norm_width),
+                                                          ('value', '!=', 0)]) > 0
         elif self.price_type == 'area':
             return width >= self.price_area_min_width and width <= self.price_area_max_width
         return True
@@ -73,18 +73,16 @@ class product_supplier_info(models.Model):
     def manzano_normalize_width_value(self, width):
         headers = self.get_price_table_headers()
         norm_val = width
-        num_x_headers = len(headers['x'])
-        for index in range(num_x_headers-1):
-            if width >= headers['x'][index] and width < headers['x'][num_x_headers-1]:
+        for index in range(len(headers['x'])-1):
+            if width >= headers['x'][index] and width < headers['x'][index+1]:
                 norm_val = headers['x'][index]
         return norm_val
 
     def manzano_normalize_height_value(self, height):
         headers = self.get_price_table_headers()
         norm_val = height
-        num_y_headers = len(headers['y'])
-        for index in range(num_y_headers-1):
-            if height >= headers['y'][index] and height < headers['y'][num_y_headers-1]:
+        for index in range(len(headers['y'])-1):
+            if height >= headers['y'][index] and height < headers['y'][index+1]:
                 norm_val = headers['y'][index]
         return norm_val
     # ---

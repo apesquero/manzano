@@ -93,7 +93,7 @@ class product_product(osv.osv):
 
     def get_sale_price_table_headers(self, cr, uid, id, context=None):
         product = self.browse(cr, uid, id, context=context)
-        result = {product.id: {'x': [], 'y': []}}
+        result = {product.id: {'x': [0], 'y': [0]}}
         for rec in product.sale_prices_table:
             result[product.id]['x'].append(rec.pos_x)
             result[product.id]['y'].append(rec.pos_y)
@@ -185,19 +185,17 @@ class product_product(osv.osv):
     def manzano_normalize_sale_width_value(self, cr, uid, id, width, context=None):
         headers = self.get_sale_price_table_headers(cr, uid, id, context=context)
         norm_val = width
-        num_x_headers = len(headers[id]['x'])
-        for index in range(num_x_headers-1):
-            if width >= headers[id]['x'][index] and width < headers[id]['x'][num_x_headers-1]:
-                norm_val = headers[id]['x'][index]
+        for index in range(len(headers[id]['x'])-1):
+            if width >= headers[id]['x'][index] and width < headers[id]['x'][index+1]:
+                norm_val = headers[id]['x'][index+1]
         return norm_val
 
     def manzano_normalize_sale_height_value(self, cr, uid, id, height, context=None):
         headers = self.get_sale_price_table_headers(cr, uid, id, context=context)
         norm_val = height
-        num_y_headers = len(headers[id]['y'])
-        for index in range(num_y_headers-1):
-            if height >= headers[id]['y'][index] and height < headers[id]['y'][num_y_headers-1]:
-                norm_val = headers[id]['y'][index]
+        for index in range(len(headers[id]['y'])-1):
+            if height >= headers[id]['y'][index] and height < headers[id]['y'][index+1]:
+                norm_val = headers[id]['y'][index+1]
         return norm_val
     # ---
 
