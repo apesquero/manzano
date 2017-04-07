@@ -6,7 +6,7 @@
 		<xpath expr="//t[@t-call='report.html_container']" position="replace">
 		    <t t-call="report.html_container">
 			<t t-foreach="docs" t-as="doc">
-				<t t-call="informe_manzano.ins_report_invoice_document" t-lang="doc.partner_id.lang"/>
+				<t t-call="aloxa_manzano.ins_report_invoice_document" t-lang="doc.partner_id.lang"/>
 			</t>		       
 		    </t>
 	    </xpath>
