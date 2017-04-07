@@ -42,7 +42,7 @@
                        		<td class="text-right" style="border-color:97BF0D;">Impuestos</td>
                        		<td class="text-right" style="border-color:97BF0D;">Importe</td>
                    		</tr>
-                   		<tr t-foreach="doc.invoice_line" t-as="l">
+                   		<tr t-foreach="doc.invoice_line_ids" t-as="l">
                        		<td style="border-color:97BF0D;"><span t-field="l.name"/></td>
                        		<td style="border-color:97BF0D;">
                            		<span t-field="l.quantity"/>
