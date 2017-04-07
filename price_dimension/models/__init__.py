@@ -20,6 +20,7 @@
 #
 ##############################################################################
 from . import product_prices_table
+from . import inherit_procurement_order
 from . import inherit_product_attribute_value
 from . import inherit_product_template
 from . import inherit_product_product

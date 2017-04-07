@@ -33,5 +33,5 @@ class product_attribute_value(osv.osv):
                                               ('percentage', u'Percentage')],
                                              string='Price Extra Type',
                                              required=True,
-                                             default='standard')
+                                             default='standard'),
     }
