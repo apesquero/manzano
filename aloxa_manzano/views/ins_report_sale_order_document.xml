@@ -91,7 +91,7 @@
 						<tr>
 							<td style="border-color:97BF0D;">
 								<!-- <p>FORMA DE PAGO: <span t-field="doc.payment_type"/></p>-->
-								<p><p t-field="doc.company_id.bank_ids.acc_number"/></p>
+								<!--<p><p t-field="doc.company_id.bank_ids.acc_number"/></p>-->
 							</td>
 						</tr> 
 					</table>               
