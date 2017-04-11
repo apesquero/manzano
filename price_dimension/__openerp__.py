@@ -40,6 +40,7 @@
     },
     'data': [
         'views/general.xml',
+        'views/supplier_attribute_value.xml',
         'views/inherit_product_template.xml',
         'views/inherit_product_product.xml',
         'views/inherit_product_supplier_info.xml',

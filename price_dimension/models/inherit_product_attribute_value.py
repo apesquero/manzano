@@ -23,10 +23,18 @@
 import openerp
 from openerp import api, tools, SUPERUSER_ID
 from openerp.osv import osv, fields, expression
+from openerp.exceptions import UserError
 
 
 class product_attribute_value(osv.osv):
     _inherit = "product.attribute.value"
+    
+    def unlink(self, cr, uid, ids, context=None):
+        ctx = dict(context or {}, active_test=False)
+        product_ids = self.pool['product.supplierinfo'].search(cr, uid, [('attribute_value_ids', 'in', ids)], context=ctx)
+        if product_ids:
+            raise UserError(_('The operation cannot be completed:\nYou are trying to delete an attribute value with a reference on a product supplier variant.'))
+        return super(product_attribute_value, self).unlink(cr, uid, ids, context=context)
 
     _columns = {
         'price_extra_type': fields.selection([('standard', u'Standard'),
@@ -34,4 +42,5 @@ class product_attribute_value(osv.osv):
                                              string='Price Extra Type',
                                              required=True,
                                              default='standard'),
+        'supplier_ids': fields.many2many('product.supplierinfo', id1='att_id', id2='prod_id', string='Variants', readonly=True),
     }

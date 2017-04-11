@@ -25,6 +25,7 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 from openerp import models, fields, api, SUPERUSER_ID
 from openerp.exceptions import ValidationError
+from openerp.tools.translate import _
 
 
 class purchase_order_line(models.Model):
@@ -81,6 +82,10 @@ class purchase_order_line(models.Model):
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def onchange_product_id(self):
         result = super(purchase_order_line, self).onchange_product_id()
+        
+        if self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
+        
         if not self.product_id:
             return result
 

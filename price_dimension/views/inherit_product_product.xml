@@ -23,6 +23,9 @@
 	                		<field name="sale_price_area_min_height" />
 	                		<field name="sale_price_area_max_height" />
 	                	</group>
+	                	<group>
+	                		<field name="sale_min_price_area" />
+	                	</group>
                 	</group>
                 	<div attrs="{'invisible':[('sale_price_type', 'not in', ['table_1d','table_2d'])]}">
 						<!--group>

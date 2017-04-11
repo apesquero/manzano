@@ -40,6 +40,7 @@ class procurement_order(models.Model):
     @api.multi
     def make_po(self):
         _logger.info("PASA PO")
+        _logger.info(self.manzano_width)
         cache = {}
         res = []
         for procurement in self:
@@ -90,7 +91,7 @@ class procurement_order(models.Model):
             po_line = False
             for line in po.order_line:
                 _logger.info("PASA PO 2B")
-                if line.product_id == procurement.product_id and line.product_uom == procurement.product_id.uom_po_id and line.manzano_width == procurement.purchase_line_id.manzano_width and line.manzano_height == procurement.purchase_line_id.manzano_height:
+                if line.product_id == procurement.product_id and line.product_uom == procurement.product_id.uom_po_id and line.manzano_width == procurement.manzano_width and line.manzano_height == procurement.manzano_height:
                     _logger.info("PASA PO 2C")
                     procurement_uom_po_qty = self.env['product.uom']._compute_qty_obj(procurement.product_uom, procurement.product_qty, procurement.product_id.uom_po_id)
                     seller = self.product_id._select_seller(
@@ -139,12 +140,9 @@ class procurement_order(models.Model):
         self.ensure_one()
         res = super(procurement_order, self)._prepare_purchase_order_line(po=po, supplier=supplier)
         
-        _logger.info(self._context)
-        _logger.info(self.manzano_height)
-        
         product_id = self.product_id.with_context(
-            width=self.purchase_line_id.manzano_width,
-            height=self.purchase_line_id.manzano_height
+            width=self.manzano_width,
+            height=self.manzano_height
         )
 
         procurement_uom_po_qty = self.env['product.uom']._compute_qty_obj(self.product_uom, self.product_qty, self.product_id.uom_po_id)
@@ -157,8 +155,8 @@ class procurement_order(models.Model):
 
         if seller:
             seller = seller.with_context(
-                width=self.purchase_line_id.manzano_width,
-                height=self.purchase_line_id.manzano_height
+                width=self.manzano_width,
+                height=self.manzano_height
             )
 
         taxes = product_id.supplier_taxes_id
@@ -171,10 +169,13 @@ class procurement_order(models.Model):
         if price_unit and seller and po.currency_id and seller.currency_id != po.currency_id:
             price_unit = seller.currency_id.compute(price_unit, po.currency_id)
 
+        _logger.info("ESTE ES EL PRECIO")
+        _logger.info(self.manzano_width)
+
         res.update({
             'price_unit': price_unit,
-            'manzano_width': self.purchase_line_id.manzano_width,
-            'manzano_height': self.purchase_line_id.manzano_height
+            'manzano_width': self.manzano_width,
+            'manzano_height': self.manzano_height
         })
 
         return res

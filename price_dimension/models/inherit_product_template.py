@@ -32,6 +32,7 @@ class product_template(models.Model):
     sale_price_area_max_width = fields.Float(string="Max. Width", default=0.0, digits=dp.get_precision('Product Price'))
     sale_price_area_min_height = fields.Float(string="Min. Height", default=0.0, digits=dp.get_precision('Product Price'))
     sale_price_area_max_height = fields.Float(string="Max. Height", default=0.0, digits=dp.get_precision('Product Price'))
+    sale_min_price_area = fields.Monetary("Min. Price")
     sale_price_type = fields.Selection(
             PRICE_TYPES,
             string='Sale Price Type',

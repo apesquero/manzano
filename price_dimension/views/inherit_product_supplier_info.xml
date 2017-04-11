@@ -6,6 +6,12 @@
         <field name="inherit_id" ref="product.product_supplierinfo_form_view" /> 
         <field name="arch" type="xml">
         
+        	<xpath expr="//group[1]" position="before">
+				<header>
+	                <button string="Variant Prices" type="object" name="action_open_value_extras"/>
+	            </header>
+            </xpath>
+        
 			<xpath expr="//form/group" position="after">
                 <group name="supplier_price_type_g" string="Supplier Price Type">
                     <label for="price_type"/>
@@ -22,6 +28,9 @@
                 		<field name="price_area_min_height" />
                 		<field name="price_area_max_height" />
                 	</group>
+                	<group>
+	                	<field name="min_price_area" />
+	                </group>
                 </group>
                 <div attrs="{'invisible':[('price_type', 'not in', ['table_1d','table_2d'])]}">
                 	<field name="prices_table" widget="mdtable" mode="price_type" />
