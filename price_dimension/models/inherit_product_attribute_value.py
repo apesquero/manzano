@@ -24,11 +24,13 @@ import openerp
 from openerp import api, tools, SUPERUSER_ID
 from openerp.osv import osv, fields, expression
 from openerp.exceptions import UserError
+from openerp.tools.translate import _
+from .consts import EXTRA_PRICE_TYPES
 
 
 class product_attribute_value(osv.osv):
     _inherit = "product.attribute.value"
-    
+
     def unlink(self, cr, uid, ids, context=None):
         ctx = dict(context or {}, active_test=False)
         product_ids = self.pool['product.supplierinfo'].search(cr, uid, [('attribute_value_ids', 'in', ids)], context=ctx)
@@ -37,8 +39,7 @@ class product_attribute_value(osv.osv):
         return super(product_attribute_value, self).unlink(cr, uid, ids, context=context)
 
     _columns = {
-        'price_extra_type': fields.selection([('standard', u'Standard'),
-                                              ('percentage', u'Percentage')],
+        'price_extra_type': fields.selection(EXTRA_PRICE_TYPES,
                                              string='Price Extra Type',
                                              required=True,
                                              default='standard'),

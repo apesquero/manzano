@@ -20,10 +20,7 @@
 #
 ##############################################################################
 
-from openerp.tools.translate import _
 from openerp.osv import fields, osv
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class stock_move(osv.osv):

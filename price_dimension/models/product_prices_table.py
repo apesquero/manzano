@@ -34,16 +34,3 @@ class product_prices_table(models.Model):
     sale_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
 #     cost_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
     supplier_product_id = fields.Many2one('product.supplierinfo', 'Product Supplier Info')
-
-    def get_sort_headers(self, records):
-        if not records:
-            records = []
-        result = {'x': [], 'y': []}
-        for rec in records:
-            result['x'].append(rec.pos_x)
-            result['y'].append(rec.pos_y)
-        result.update({
-            'x': list(set(result['x'].sort())),
-            'y': list(set(result['y'].sort()))
-        })
-        return result

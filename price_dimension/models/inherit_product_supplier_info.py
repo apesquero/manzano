@@ -21,47 +21,38 @@
 ##############################################################################
 
 from openerp import models, fields, api
-from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
-import logging
-_logger = logging.getLogger(__name__)
+from .consts import PRICE_TYPES
 
 
 class product_supplier_info(models.Model):
     _inherit = 'product.supplierinfo'
-    
+
     @api.depends('attribute_value_ids')
     def _get_price_extra_percentage(self):
+        product_id = self.env.context and self.env.context.get('product_id') or False
         for supplier in self:
             price_extra = 0.0
-            _logger.info("SSSA A  A A A")
-            for ttt in supplier.product_id.attribute_value_ids:
-                _logger.info(ttt)
-            _logger.info("FIN SSSA")
-            _logger.info(supplier.product_tmpl_id.id)
             for variant_id in supplier.attribute_value_ids:
-                _logger.info(variant_id.value.id)
-                if variant_id.attribute not in supplier.possible_range_num_price_attribute or variant_id.price_extra_type != 'percentage' or supplier.id != variant_id.supplierinfo_id.id:
+                if product_id and variant_id.value not in product_id.attribute_value_ids:
+                    continue
+                if variant_id.price_extra_type != 'percentage' or supplier.id != variant_id.supplierinfo_id.id:
                     continue
                 price_extra += variant_id.price_extra
             supplier.price_extra_perc = price_extra
 
     @api.depends('attribute_value_ids')
     def _get_price_extra(self):
+        product_id = self.env.context and self.env.context.get('product_id') or False
         for supplier in self:
             price_extra = 0.0
             for variant_id in supplier.attribute_value_ids:
-                if variant_id.attribute not in supplier.possible_range_num_price_attribute or variant_id.price_extra_type != 'standard' or supplier.id != variant_id.supplierinfo_id.id:
+                if product_id and variant_id.value not in product_id.attribute_value_ids:
+                    continue
+                if variant_id.price_extra_type != 'standard' or supplier.id != variant_id.supplierinfo_id.id:
                     continue
                 price_extra += variant_id.price_extra
             supplier.price_extra = price_extra
-
-    # -- START Original source by 'Prev. Manzano Dev.'
-    @api.depends('product_tmpl_id.attribute_line_ids')
-    def _compute_possible_range_num_price_attribute(self):
-        for supplier in self:
-            supplier.possible_range_num_price_attribute = supplier.product_tmpl_id.attribute_line_ids.mapped('attribute_id')
-    # -- END
 
     price_area_min_width = fields.Float(string="Min. Width", default=0.0, digits=dp.get_precision('Product Price'))
     price_area_max_width = fields.Float(string="Max. Width", default=0.0, digits=dp.get_precision('Product Price'))
@@ -81,8 +72,6 @@ class product_supplier_info(models.Model):
         comodel_name='supplier.attribute.value',
         inverse_name='supplierinfo_id'
     )
-    possible_range_num_price_attribute = fields.Many2many(
-        comodel_name='product.attribute', compute='_compute_possible_range_num_price_attribute')
 
     price_extra = fields.Float(compute='_get_price_extra', string='Variant Extra Price', help="This is the sum of the extra price of all attributes", digits_compute=dp.get_precision('Product Price'))
     price_extra_perc = fields.Float(compute='_get_price_extra_percentage', string='Variant Extra Price Percentage', help="This is the percentage of the extra price of all attributes", digits_compute=dp.get_precision('Product Price'))
@@ -131,19 +120,18 @@ class product_supplier_info(models.Model):
             if height > headers['y'][index] and height <= headers['y'][index+1]:
                 norm_val = headers['y'][index]
         return norm_val
-    # ---
 
     @api.depends('price')
     def get_supplier_price(self):
         # FIXME: Mejor usar atributos
         manzano_width = self.env.context and self.env.context.get('width') or False
         manzano_height = self.env.context and self.env.context.get('height') or False
+        product_id = self.env.context and self.env.context.get('product_id') or False
 
         result = {}
         for record in self:
-            if not manzano_width and not manzano_height:
-                result[record.id] = False
-            else:
+            result[record.id] = False
+            if manzano_width and manzano_height:
                 product_prices_table_obj = self.env['product.prices_table']
                 manzano_width = record.manzano_normalize_width_value(manzano_width)
                 if record.price_type == 'table_2d':
@@ -165,14 +153,9 @@ class product_supplier_info(models.Model):
                     result[record.id] = max(record.min_price_area, result[record.id])
             if not result[record.id]:
                 result[record.id] = record.price
-            _logger.info("AAA")
-            _logger.info(result[record.id])
-            _logger.info("BBB")
-            _logger.info(record.price_extra)
-            _logger.info("CCC")
-            _logger.info(record.price_extra_perc)
-            result[record.id] += record.price_extra + record.price_extra_perc
+            result[record.id] += record.with_context(product_id=product_id).price_extra + record.with_context(product_id=product_id).price_extra_perc
         return result
+    # ---
 
     # -- START Original source by 'Prev. Manzano Dev.'
     @api.multi

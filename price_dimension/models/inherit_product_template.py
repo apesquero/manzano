@@ -21,8 +21,8 @@
 ##############################################################################
 
 from openerp import models, fields, api
-from consts import PRICE_TYPES
 import openerp.addons.decimal_precision as dp
+from .consts import PRICE_TYPES
 
 
 class product_template(models.Model):
@@ -33,13 +33,16 @@ class product_template(models.Model):
     sale_price_area_min_height = fields.Float(string="Min. Height", default=0.0, digits=dp.get_precision('Product Price'))
     sale_price_area_max_height = fields.Float(string="Max. Height", default=0.0, digits=dp.get_precision('Product Price'))
     sale_min_price_area = fields.Monetary("Min. Price")
+
     sale_price_type = fields.Selection(
             PRICE_TYPES,
             string='Sale Price Type',
             required=True,
             default='standard',
         )
-    sale_prices_table = fields.One2many('product.prices_table', 'sale_product_tmpl_id', string="Sale Prices Table")
+    sale_prices_table = fields.One2many('product.prices_table',
+                                        'sale_product_tmpl_id',
+                                        string="Sale Prices Table")
 #     sale_prices_table_attr_axe_x = fields.Many2one('product.attribute.line', 'Sale Price Table Attribute Axe X')
 #     sale_prices_table_attr_axe_y = fields.Many2one('product.attribute.line', 'Sale Price Table Attribute Axe Y')
 
@@ -60,7 +63,9 @@ class product_template(models.Model):
         if context is None:
             context = {}
 
-        res = super(product_template, self)._price_get(cr, uid, products, ptype=ptype, context=context)
+        res = super(product_template, self)._price_get(cr, uid, products,
+                                                       ptype=ptype,
+                                                       context=context)
         product_uom_obj = self.pool.get('product.uom')
         for product in products:
             # standard_price field can only be seen by users in base.group_user

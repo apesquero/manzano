@@ -24,8 +24,6 @@ from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class sale_order_line(models.Model):
@@ -50,27 +48,22 @@ class sale_order_line(models.Model):
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def product_id_change(self):
         super(sale_order_line, self).product_id_change()
-        
+
+        if not self.product_id:
+            return
+
         if self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
             raise ValidationError(_("Invalid Dimensions!"))
-        
-        
-        if not self.product_id:
-            return {'domain': {'product_uom': []}}
 
         vals = {}
-        domain = {'product_uom': [('category_id', '=', self.product_id.uom_id.category_id.id)]}
-        if not self.product_uom or (self.product_id.uom_id.id != self.product_uom.id):
-            vals['product_uom'] = self.product_id.uom_id
-            vals['product_uom_qty'] = 1.0
-
         product = self.product_id.with_context(
             lang=self.order_id.partner_id.lang,
             partner=self.order_id.partner_id.id,
-            quantity=vals.get('product_uom_qty') or self.product_uom_qty,
+            quantity=self.product_uom_qty,
             date=self.order_id.date_order,
             pricelist=self.order_id.pricelist_id.id,
             uom=self.product_uom.id,
+
             width=self.manzano_width,
             height=self.manzano_height
         )
@@ -81,12 +74,9 @@ class sale_order_line(models.Model):
             name += '\n' + product.description_sale
         vals['name'] = name
 
-        self._compute_tax_id()
-
         if self.order_id.pricelist_id and self.order_id.partner_id:
             vals['price_unit'] = self.env['account.tax']._fix_tax_included_price(product.price, product.taxes_id, self.tax_id)
         self.update(vals)
-        return {'domain': domain}
 
     def product_uom_change(self):
         super(sale_order_line, self).product_uom_change()
@@ -102,6 +92,7 @@ class sale_order_line(models.Model):
                 pricelist=self.order_id.pricelist_id.id,
                 uom=self.product_uom.id,
                 fiscal_position=self.env.context.get('fiscal_position'),
+
                 width=self.manzano_width,
                 height=self.manzano_height
             )
@@ -109,7 +100,6 @@ class sale_order_line(models.Model):
 
     @api.multi
     def _prepare_order_line_procurement(self, group_id=False):
-        _logger.info("POLP SSS")
         self.ensure_one()
         vals = super(sale_order_line, self)._prepare_order_line_procurement(group_id=group_id)
         vals.update({
@@ -121,7 +111,6 @@ class sale_order_line(models.Model):
     # BREAK INHERITANCE!!
     @api.multi
     def _action_procurement_create(self):
-        _logger.info("PC RRR")
         """
         Create procurements based on quantity ordered. If the quantity is increased, new
         procurements are created. If the quantity is decreased, no automated action is taken.
@@ -141,17 +130,17 @@ class sale_order_line(models.Model):
                 vals = line.order_id._prepare_procurement_group()
                 line.order_id.procurement_group_id = self.env["procurement.group"].create(vals)
  
-            vals = line._prepare_order_line_procurement(group_id=line.order_id.procurement_group_id.id)
+            vals = line._prepare_order_line_procurement(
+                group_id=line.order_id.procurement_group_id.id)
             vals['product_qty'] = line.product_uom_qty - qty
             new_proc = self.env["procurement.order"].with_context(
-                procurement_autorun_defer=True,
-            ).create(vals)
+                    procurement_autorun_defer=True,
+                ).create(vals)
+            # Do one by one because need pass specific context values
+            new_proc.with_context(
+                width=line.manzano_width,
+                height=line.manzano_height).run()
             new_procs += new_proc
-        new_procs.with_context(
-                width=self.manzano_width,
-                height=self.manzano_height
-            ).run()
-        _logger.info("FIN")
         return new_procs
 
 #     def product_id_change(self):

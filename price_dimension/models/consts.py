@@ -20,7 +20,10 @@
 #
 ##############################################################################
 
-PRICE_TYPES = [('standard', u'Standard'),
-               ('table_1d', u'1D Table'),
-               ('table_2d', u'2D Table'),
-               ('area', u'Area')]
+PRICE_TYPES = [('standard', 'Standard'),
+               ('table_1d', '1D Table'),
+               ('table_2d', '2D Table'),
+               ('area', 'Area')]
+
+EXTRA_PRICE_TYPES = [('standard', 'Standard'),
+                     ('percentage', 'Percentage')]

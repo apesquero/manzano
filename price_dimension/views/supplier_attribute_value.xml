@@ -8,7 +8,7 @@
         <field name="model">supplier.attribute.value</field>
         <field name="arch" type="xml">
             
-            <tree string="Variant Values" editable="bottom" nodelete="1" nocreate="1">
+            <tree string="Supplier Variant Values" editable="bottom" nodelete="1" nocreate="1">
                 <field name="attribute" readonly="1" />
                 <field name="value" readonly="1" />
                 <field name="price_extra_type" />
