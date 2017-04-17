@@ -187,7 +187,7 @@ class product_product(osv.osv):
         norm_val = width
         for index in range(len(headers[id]['x'])-1):
             if width > headers[id]['x'][index] and width <= headers[id]['x'][index+1]:
-                norm_val = headers[id]['x'][index]
+                norm_val = headers[id]['x'][index+1]
         return norm_val
 
     def manzano_normalize_sale_height_value(self, cr, uid, id, height, context=None):
@@ -195,7 +195,7 @@ class product_product(osv.osv):
         norm_val = height
         for index in range(len(headers[id]['y'])-1):
             if height > headers[id]['y'][index] and height <= headers[id]['y'][index+1]:
-                norm_val = headers[id]['y'][index]
+                norm_val = headers[id]['y'][index+1]
         return norm_val
     # ---
 
