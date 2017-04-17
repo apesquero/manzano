@@ -152,7 +152,8 @@ class procurement_order(models.Model):
         if taxes_id:
             taxes_id = taxes_id.filtered(lambda x: x.company_id.id == self.company_id.id)
 
-        name = '%s [%dx%d]' % (res['name'], self.manzano_width, self.manzano_height)
+        if product_id.sale_price_type != 'standard':
+            name = '%s [%dx%d]' % (res['name'], self.manzano_width, self.manzano_height)
 
         price_unit = self.env['account.tax']._fix_tax_included_price(seller.get_supplier_price()[seller.id], product_id.supplier_taxes_id, taxes_id) if seller else 0.0
         if price_unit and seller and po.currency_id and seller.currency_id != po.currency_id:

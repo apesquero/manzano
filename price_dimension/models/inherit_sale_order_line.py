@@ -69,7 +69,8 @@ class sale_order_line(models.Model):
         )
 
         name = product.name_get()[0][1]
-        name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type != 'standard':
+            name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
         if product.description_sale:
             name += '\n' + product.description_sale
         vals['name'] = name

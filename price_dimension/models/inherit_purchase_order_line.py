@@ -107,7 +107,8 @@ class purchase_order_line(models.Model):
             'height': self.manzano_height
         })
         self.name = product_lang.display_name
-        self.name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type != 'standard':
+            self.name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
         if product_lang.description_purchase:
             self.name += '\n' + product_lang.description_purchase
 
