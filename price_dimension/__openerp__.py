@@ -46,6 +46,7 @@
         'views/inherit_product_attribute_value.xml',
         'views/inherit_sale_order.xml',
         'views/inherit_purchase_order.xml',
+	'security/ir.model.access.csv',
     ],
     'qweb': [
         'static/src/xml/*.xml',
