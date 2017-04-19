@@ -112,9 +112,8 @@ class product_product(osv.osv):
         manzano_height = context and context.get('height') or False
 
         for product in product_ids:
-            if not manzano_width and not manzano_height:
-                result[product.id] = False
-            else:
+            result[product.id] = False
+            if manzano_width and manzano_height:
                 product_prices_table_obj = self.pool.get('product.prices_table')
                 manzano_width = self.manzano_normalize_sale_width_value(cr, uid, product.id, manzano_width, context=context)
                 if product.sale_price_type == 'table_2d':
@@ -133,6 +132,7 @@ class product_product(osv.osv):
                     result[product.id] = res and res[0]['value'] or False
                 elif product.sale_price_type == 'area':
                     result[product.id] = product.list_price * manzano_width * manzano_height
+                    result[product.id] = max(product.sale_min_price_area, result[product.id])
             if not result[product.id]:
                 result[product.id] = product.list_price
         return result
@@ -179,14 +179,14 @@ class product_product(osv.osv):
                                                                    ('pos_x', '=', norm_width),
                                                                    ('value', '!=', 0)], context=context) > 0
         elif product.sale_price_type == 'area':
-            return width >= product.sale_price_area_min_width and width <= product.sale_price_area_max_width
+            return width >= product.sale_price_area_min_width and width <= product.sale_price_area_max_width and height >= product.sale_price_area_min_height and height <= product.sale_price_area_max_height
         return True
 
     def manzano_normalize_sale_width_value(self, cr, uid, id, width, context=None):
         headers = self.get_sale_price_table_headers(cr, uid, id, context=context)
         norm_val = width
         for index in range(len(headers[id]['x'])-1):
-            if width >= headers[id]['x'][index] and width < headers[id]['x'][index+1]:
+            if width > headers[id]['x'][index] and width <= headers[id]['x'][index+1]:
                 norm_val = headers[id]['x'][index+1]
         return norm_val
 
@@ -194,7 +194,7 @@ class product_product(osv.osv):
         headers = self.get_sale_price_table_headers(cr, uid, id, context=context)
         norm_val = height
         for index in range(len(headers[id]['y'])-1):
-            if height >= headers[id]['y'][index] and height < headers[id]['y'][index+1]:
+            if height > headers[id]['y'][index] and height <= headers[id]['y'][index+1]:
                 norm_val = headers[id]['y'][index+1]
         return norm_val
     # ---

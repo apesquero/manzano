@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+	<record id="view_product_template_form_price_type" model="ir.ui.view">
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view" /> 
+        <field name="arch" type="xml">
+		<xpath expr="//field[@name='list_price']" position="before">
+			<label for="sale_price_type"/>
+	                <div>
+	                    <field name="sale_price_type" />
+	                </div>
+		</xpath>
+		<xpath expr="//field[@name='list_price']" position="attributes">
+			<attribute name="attrs">{'invisible':[('sale_price_type', 'not in', ['standard', 'area'])]}</attribute>
+		</xpath>
+	</field>
+    	</record>
+
 	<record id="view_product_template_form" model="ir.ui.view">
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view" /> 
         <field name="arch" type="xml">
         
 			<xpath expr="//notebook/page[1]" position="after">
-				<page string="Sale Price Type">
-	                <group name="sale_price_type_g">
-	                    <label for="sale_price_type"/>
-	                    <div>
-	                        <field name="sale_price_type" />
-	                    </div>
-	                </group>
+                         			
+               <page string="Sale Price Type" attrs="{'invisible':[('sale_price_type', '=', 'standard')]}">
+	                
 	                <group attrs="{'invisible':[('sale_price_type', '!=', 'area')]}">
 	                	<group>
 	                		<field name="sale_price_area_min_width" />
@@ -22,6 +34,9 @@
 	                	<group>
 	                		<field name="sale_price_area_min_height" />
 	                		<field name="sale_price_area_max_height" />
+	                	</group>
+	                	<group>
+	                		<field name="sale_min_price_area" />
 	                	</group>
                 	</group>
                 	<div attrs="{'invisible':[('sale_price_type', 'not in', ['table_1d','table_2d'])]}">
@@ -43,6 +58,7 @@
 	                	<button name="%(launch_wizard_mdtable_sale_import_data)d" string="Import Records" type="action" class="oe_highlight pull-right" />
             		</div>
             	</page>
+              
             </xpath>
 						 	
         </field>

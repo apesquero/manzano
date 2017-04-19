@@ -25,14 +25,15 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 from openerp import models, fields, api, SUPERUSER_ID
 from openerp.exceptions import ValidationError
+from openerp.tools.translate import _
 
 
 class purchase_order_line(models.Model):
     _inherit = 'purchase.order.line'
 
     # FIXME: Mejor usar atributos
-    manzano_width = fields.Float(string="Width", required=True)
-    manzano_height = fields.Float(string="Height", required=True)
+    manzano_width = fields.Float(string="Width", required=False)
+    manzano_height = fields.Float(string="Height", required=False)
 
     @api.constrains('manzano_width')
     def _check_manzano_width(self):
@@ -81,6 +82,10 @@ class purchase_order_line(models.Model):
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
     def onchange_product_id(self):
         result = super(purchase_order_line, self).onchange_product_id()
+
+        if self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
+
         if not self.product_id:
             return result
 
@@ -102,7 +107,8 @@ class purchase_order_line(models.Model):
             'height': self.manzano_height
         })
         self.name = product_lang.display_name
-        self.name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type != 'standard':
+            self.name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
         if product_lang.description_purchase:
             self.name += '\n' + product_lang.description_purchase
 
@@ -144,7 +150,8 @@ class purchase_order_line(models.Model):
 
         seller = seller.with_context(
             width=self.manzano_width,
-            height=self.manzano_height
+            height=self.manzano_height,
+            product_id=product
         )
 
         price_unit = self.env['account.tax']._fix_tax_included_price(seller.get_supplier_price()[seller.id], product.supplier_taxes_id, self.taxes_id) if seller else 0.0

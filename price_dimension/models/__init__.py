@@ -27,3 +27,5 @@ from . import inherit_product_product
 from . import inherit_product_supplier_info
 from . import inherit_sale_order_line
 from . import inherit_purchase_order_line
+from . import inherit_stock_move
+from . import supplier_attribute_value

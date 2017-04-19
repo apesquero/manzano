@@ -20,17 +20,16 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api
-import openerp.addons.decimal_precision as dp
+from openerp.osv import fields, osv
 
 
-class product_prices_table(models.Model):
-    _name = 'product.prices_table'
+class stock_move(osv.osv):
+    _inherit = 'stock.move'
 
-    pos_x = fields.Float(string="X", required=True)
-    pos_y = fields.Float(string="Y", required=True)
-    value = fields.Float(string="Value", digits=dp.get_precision('Product Price'))
-
-    sale_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
-#     cost_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
-    supplier_product_id = fields.Many2one('product.supplierinfo', 'Product Supplier Info')
+    def _prepare_procurement_from_move(self, cr, uid, move, context=None):
+            res = super(stock_move, self)._prepare_procurement_from_move(cr, uid, move, context=context)
+            res.update({
+                'manzano_width': context.get('width', 0),
+                'manzano_height': context.get('height', 0)
+            })
+            return res

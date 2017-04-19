@@ -21,16 +21,28 @@
 ##############################################################################
 
 from openerp import models, fields, api
-import openerp.addons.decimal_precision as dp
+import openerp.addons.decimal_precision as dp 
+from .consts import EXTRA_PRICE_TYPES
 
 
-class product_prices_table(models.Model):
-    _name = 'product.prices_table'
+class supplier_attribute_value(models.Model):
+    _name = 'supplier.attribute.value'
 
-    pos_x = fields.Float(string="X", required=True)
-    pos_y = fields.Float(string="Y", required=True)
-    value = fields.Float(string="Value", digits=dp.get_precision('Product Price'))
+    # -- START Original source by 'Prev. Manzano Dev.'
+    supplierinfo_id = fields.Many2one(comodel_name='product.supplierinfo')
+    value = fields.Many2one(
+        comodel_name='product.attribute.value',
+        string='Value')
+    attribute = fields.Many2one(
+        comodel_name='product.attribute', related='value.attribute_id',
+        string='Attribute')
+    price_extra = fields.Float(
+        string='Supplier Price Extra',
+        digits_compute=dp.get_precision('Product Price'),
+        default=0.0)
+    # -- END
 
-    sale_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
-#     cost_product_tmpl_id = fields.Many2one('product.template', 'Product Template')
-    supplier_product_id = fields.Many2one('product.supplierinfo', 'Product Supplier Info')
+    price_extra_type = fields.Selection(EXTRA_PRICE_TYPES,
+                                        string='Price Extra Type',
+                                        equired=True,
+                                        default='standard')
