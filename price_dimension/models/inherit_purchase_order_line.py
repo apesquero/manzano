@@ -32,8 +32,8 @@ class purchase_order_line(models.Model):
     _inherit = 'purchase.order.line'
 
     # FIXME: Mejor usar atributos
-    manzano_width = fields.Float(string="Width", required=True)
-    manzano_height = fields.Float(string="Height", required=True)
+    manzano_width = fields.Float(string="Width", required=False)
+    manzano_height = fields.Float(string="Height", required=False)
 
     @api.constrains('manzano_width')
     def _check_manzano_width(self):
