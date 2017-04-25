@@ -42,7 +42,7 @@ class sale_order_line(models.Model):
     @api.constrains('manzano_height')
     def _check_manzano_height(self):
         for record in self:
-            if not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
+            if record.sale_type_price not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
                 raise ValidationError("Invalid height!")
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
@@ -69,8 +69,10 @@ class sale_order_line(models.Model):
         )
 
         name = product.name_get()[0][1]
-        if product.sale_price_type != 'standard':
-            name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type = 'table_2d':
+            name += ' [Width:%d cms x Height%d cms]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type = 'table_1d':
+            name += ' [Width:%d cms]' % (self.manzano_width)
         if product.description_sale:
             name += '\n' + product.description_sale
         vals['name'] = name
