@@ -24,6 +24,7 @@ from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
+from .consts import PRICE_TYPES
 
 
 class sale_order_line(models.Model):
@@ -32,6 +33,7 @@ class sale_order_line(models.Model):
     # FIXME: Mejor usar atributos
     manzano_width = fields.Float(string="Width", required=False)
     manzano_height = fields.Float(string="Height", required=False)
+    product_price_type = fields.Selection(PRICE_TYPES,string='Sale Price Type',related='product_id.sale_price_type')
 
     @api.constrains('manzano_width')
     def _check_manzano_width(self):
@@ -42,7 +44,7 @@ class sale_order_line(models.Model):
     @api.constrains('manzano_height')
     def _check_manzano_height(self):
         for record in self:
-            if record.sale_type_price not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
+            if not record.product_id.manzano_check_sale_dim_values(record.manzano_width, record.manzano_height)[0]:
                 raise ValidationError("Invalid height!")
 
     @api.onchange('product_id', 'manzano_width', 'manzano_height')
@@ -69,9 +71,9 @@ class sale_order_line(models.Model):
         )
 
         name = product.name_get()[0][1]
-        if product.sale_price_type = 'table_2d':
-            name += ' [Width:%d cms x Height%d cms]' % (self.manzano_width, self.manzano_height)
-        if product.sale_price_type = 'table_1d':
+        if product.sale_price_type in ['table_2d','area'] :
+            name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type == 'table_1d':
             name += ' [Width:%d cms]' % (self.manzano_width)
         if product.description_sale:
             name += '\n' + product.description_sale

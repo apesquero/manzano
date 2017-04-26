@@ -26,7 +26,7 @@ from openerp.tools.translate import _
 from openerp import models, fields, api, SUPERUSER_ID
 from openerp.exceptions import ValidationError
 from openerp.tools.translate import _
-
+from .consts import PRICE_TYPES
 
 class purchase_order_line(models.Model):
     _inherit = 'purchase.order.line'
@@ -34,6 +34,7 @@ class purchase_order_line(models.Model):
     # FIXME: Mejor usar atributos
     manzano_width = fields.Float(string="Width", required=False)
     manzano_height = fields.Float(string="Height", required=False)
+    product_price_type = fields.Selection(PRICE_TYPES,string='Sale Price Type',related='product_id.sale_price_type')
 
     @api.constrains('manzano_width')
     def _check_manzano_width(self):
@@ -107,8 +108,10 @@ class purchase_order_line(models.Model):
             'height': self.manzano_height
         })
         self.name = product_lang.display_name
-        if product.sale_price_type != 'standard':
-            self.name += ' [%dx%d]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type in ['table_2d','area'] :
+            self.name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
+        if product.sale_price_type == 'table_1d':
+            self.name += ' [Width:%d cms]' % (self.manzano_width)
         if product_lang.description_purchase:
             self.name += '\n' + product_lang.description_purchase
 
