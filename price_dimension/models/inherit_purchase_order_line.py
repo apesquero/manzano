@@ -111,9 +111,9 @@ class purchase_order_line(models.Model):
         })
         self.name = product_lang.display_name
         if product.sale_price_type in ['table_2d','area'] :
-            self.name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
+            self.name += ' [Width:%.2f cms x Height:%.2f cms]' % (self.manzano_width, self.manzano_height)
         elif product.sale_price_type == 'table_1d':
-            self.name += ' [Width:%d cms]' % (self.manzano_width)
+            self.name += ' [Width:%.2f cms]' % (self.manzano_width)
         if product_lang.description_purchase:
             self.name += '\n' + product_lang.description_purchase
 

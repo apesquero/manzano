@@ -24,7 +24,7 @@ from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
-
+from .consts import PRICE_TYPES
 
 class sale_order_line(models.Model):
     _inherit = 'sale.order.line'
@@ -73,9 +73,9 @@ class sale_order_line(models.Model):
 
         name = product.name_get()[0][1]
         if product.sale_price_type in ['table_2d', 'area']:
-            name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
+            name += ' [Width:%.2f cms x Height:%.2f cms]' % (self.manzano_width, self.manzano_height)
         elif product.sale_price_type == 'table_1d':
-            name += ' [Width:%d cms]' % (self.manzano_width)
+            name += ' [	Width:%.2f cms]' % (self.manzano_width)
         if product.description_sale:
             name += '\n' + product.description_sale
         vals['name'] = name

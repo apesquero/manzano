@@ -14,6 +14,6 @@
 	   'views/inherit_res_company.xml',
 	   'views/inherit_sale_order.xml',],
 
-  'category': 'Theme/Creative', 
+  'category': 'Customed', 
   'depends': ['account', 'sale'], 
 }
