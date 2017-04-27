@@ -51,7 +51,7 @@ class product_product(osv.osv):
         return res
 
     def _set_product_lst_price(self, cr, uid, id, name, value, args, context=None):
-        super(product_product, self)._set_product_lst_price(self, cr, uid, id, name, value, args, context=context)
+        super(product_product, self)._set_product_lst_price(cr, uid, id, name, value, args, context=context)
         product_uom_obj = self.pool.get('product.uom')
         product = self.browse(cr, uid, id, context=context)
         if 'uom' in context:
