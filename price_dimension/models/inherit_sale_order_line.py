@@ -24,9 +24,6 @@ from openerp import models, fields, api
 from openerp.exceptions import ValidationError
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
-from .consts import PRICE_TYPES
-import logging
-_logger = logging.getLogger(__name__)
 
 
 class sale_order_line(models.Model):
@@ -68,8 +65,6 @@ class sale_order_line(models.Model):
             width=self.manzano_width,
             height=self.manzano_height
         )
-
-        _logger.info("PASA POR AKII")
 
         if product.sale_price_type in ['table_2d', 'area'] and self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
             raise ValidationError(_("Invalid Dimensions!"))
