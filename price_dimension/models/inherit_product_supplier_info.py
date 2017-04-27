@@ -131,7 +131,7 @@ class product_supplier_info(models.Model):
         result = {}
         for record in self:
             result[record.id] = False
-            if manzano_width and manzano_height:
+            if manzano_width:
                 product_prices_table_obj = self.env['product.prices_table']
                 manzano_width = record.manzano_normalize_width_value(manzano_width)
                 if record.price_type == 'table_2d':

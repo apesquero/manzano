@@ -84,9 +84,6 @@ class purchase_order_line(models.Model):
     def onchange_product_id(self):
         result = super(purchase_order_line, self).onchange_product_id()
 
-        if self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
-            raise ValidationError(_("Invalid Dimensions!"))
-
         if not self.product_id:
             return result
 
@@ -94,6 +91,11 @@ class purchase_order_line(models.Model):
             width=self.manzano_width,
             height=self.manzano_height
         )
+        
+        if product.sale_price_type in ['table_2d', 'area'] and self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
+        elif product.sale_price_type == 'table_1d' and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, 0)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
 
         # Reset date, price and quantity since _onchange_quantity will provide default values
         self.date_planned = datetime.today().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
@@ -110,7 +112,7 @@ class purchase_order_line(models.Model):
         self.name = product_lang.display_name
         if product.sale_price_type in ['table_2d','area'] :
             self.name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
-        if product.sale_price_type == 'table_1d':
+        elif product.sale_price_type == 'table_1d':
             self.name += ' [Width:%d cms]' % (self.manzano_width)
         if product_lang.description_purchase:
             self.name += '\n' + product_lang.description_purchase

@@ -25,6 +25,8 @@ from openerp.exceptions import ValidationError
 from openerp.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.tools.translate import _
 from .consts import PRICE_TYPES
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class sale_order_line(models.Model):
@@ -54,9 +56,6 @@ class sale_order_line(models.Model):
         if not self.product_id:
             return
 
-        if self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
-            raise ValidationError(_("Invalid Dimensions!"))
-
         vals = {}
         product = self.product_id.with_context(
             lang=self.order_id.partner_id.lang,
@@ -70,10 +69,17 @@ class sale_order_line(models.Model):
             height=self.manzano_height
         )
 
+        _logger.info("PASA POR AKII")
+
+        if product.sale_price_type in ['table_2d', 'area'] and self.manzano_height != 0 and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, self.manzano_height)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
+        elif product.sale_price_type == 'table_1d' and self.manzano_width != 0 and not self.product_id.manzano_check_sale_dim_values(self.manzano_width, 0)[0]:
+            raise ValidationError(_("Invalid Dimensions!"))
+
         name = product.name_get()[0][1]
-        if product.sale_price_type in ['table_2d','area'] :
+        if product.sale_price_type in ['table_2d', 'area']:
             name += ' [Width:%d cms x Height:%d cms]' % (self.manzano_width, self.manzano_height)
-        if product.sale_price_type == 'table_1d':
+        elif product.sale_price_type == 'table_1d':
             name += ' [Width:%d cms]' % (self.manzano_width)
         if product.description_sale:
             name += '\n' + product.description_sale

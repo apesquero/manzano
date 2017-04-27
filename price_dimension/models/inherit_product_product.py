@@ -113,7 +113,7 @@ class product_product(osv.osv):
 
         for product in product_ids:
             result[product.id] = False
-            if manzano_width and manzano_height:
+            if manzano_width:
                 product_prices_table_obj = self.pool.get('product.prices_table')
                 manzano_width = self.manzano_normalize_sale_width_value(cr, uid, product.id, manzano_width, context=context)
                 if product.sale_price_type == 'table_2d':
